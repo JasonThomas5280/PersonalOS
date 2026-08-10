@@ -1,0 +1,50 @@
+.list {
+  display: flex;
+  flex-direction: column;
+  gap: 7px;
+}
+
+.clear {
+  padding: 12px 14px;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+}
+
+.alert {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  padding: 10px 13px;
+  border-radius: 8px;
+  border: 1px solid var(--line);
+  background: var(--card);
+  font-size: 13px;
+  line-height: 1.5;
+  color: var(--body);
+}
+
+.dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  margin-top: 5px;
+  flex-shrink: 0;
+}
+
+.alert[data-severity="critical"] {
+  border-color: color-mix(in srgb, var(--red) 45%, transparent);
+}
+.alert[data-severity="critical"] .dot {
+  background: var(--red);
+}
+
+.alert[data-severity="warning"] {
+  border-color: color-mix(in srgb, var(--yellow) 40%, transparent);
+}
+.alert[data-severity="warning"] .dot {
+  background: var(--yellow);
+}
+
+.alert[data-severity="info"] .dot {
+  background: var(--faint);
+}

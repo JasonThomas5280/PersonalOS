@@ -1,0 +1,23 @@
+.nav {
+  display: flex;
+  gap: 2px;
+  overflow-x: auto;
+  padding: 0 22px;
+  max-width: 900px;
+  margin: 0 auto;
+}
+
+.tab,
+.active {
+  padding: 10px 13px;
+  font-size: 13px;
+  color: var(--dim);
+  border-bottom: 2px solid transparent;
+  white-space: nowrap;
+}
+
+.active {
+  color: var(--gold);
+  border-bottom-color: var(--gold);
+  font-weight: 600;
+}

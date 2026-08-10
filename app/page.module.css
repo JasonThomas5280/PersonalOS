@@ -1,72 +1,106 @@
-.page {
-  flex: 1;
+.stack {
+  display: flex;
+  flex-direction: column;
+  gap: 28px;
+}
+
+.bigThree {
+  display: flex;
+  flex-direction: column;
+  gap: 9px;
+}
+
+.slot {
+  display: flex;
+  align-items: flex-start;
+  gap: 13px;
+  padding: 14px;
+}
+
+.slot[data-done="true"] .slotText {
+  text-decoration: line-through;
+  color: var(--dim);
+}
+
+.slotNum {
+  width: 24px;
+  height: 24px;
+  border-radius: 7px;
+  border: 1px solid var(--line);
+  color: var(--gold);
+  font-size: 12px;
+  font-weight: 700;
   display: flex;
   align-items: center;
   justify-content: center;
-  padding: 40px 22px;
+  flex-shrink: 0;
 }
 
-.main {
-  max-width: 640px;
-  width: 100%;
+.slotBody {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
 }
 
-.kicker {
-  font-size: 11.5px;
-  color: var(--gold);
-  letter-spacing: 0.14em;
-  text-transform: uppercase;
-  margin-bottom: 14px;
+.slotText {
+  font-size: 14.5px;
+  color: var(--text);
 }
 
-.mission {
-  font-size: 18px;
-  color: var(--gold);
-  font-style: italic;
-  line-height: 1.6;
-  margin-bottom: 22px;
-}
-
-.missionEmpty {
-  font-size: 15px;
-  color: var(--faint);
-  margin-bottom: 22px;
-}
-
-.roles {
+.slotMeta {
   display: flex;
   flex-wrap: wrap;
-  gap: 8px;
-  margin-bottom: 20px;
+  gap: 10px;
 }
 
-.role {
-  padding: 7px 13px;
-  font-size: 13px;
-  border-radius: 7px;
-  border: 1px solid var(--line);
-  background: var(--card);
-  color: var(--body);
+.slotEmpty {
+  padding-top: 3px;
 }
 
-.role[data-health="GREEN"] {
-  border-color: color-mix(in srgb, var(--green) 40%, transparent);
+.quadrant[data-q="Q2"] {
+  color: var(--green);
+}
+.quadrant[data-q="Q1"] {
+  color: var(--red);
+}
+.quadrant[data-q="Q3"],
+.quadrant[data-q="Q4"] {
+  color: var(--yellow);
 }
 
-.role[data-health="YELLOW"] {
-  border-color: color-mix(in srgb, var(--yellow) 50%, transparent);
+.sawRow {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+  gap: 10px;
 }
 
-.role[data-health="RED"] {
-  border-color: color-mix(in srgb, var(--red) 50%, transparent);
-}
-
-.stats {
+.sawCard {
+  padding: 13px;
   display: flex;
-  flex-wrap: wrap;
-  gap: 18px;
-  font-size: 13px;
-  color: var(--dim);
-  border-top: 1px solid var(--line);
-  padding-top: 16px;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.sawHead {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.sawDim {
+  font-size: 12px;
+  text-transform: capitalize;
+  color: var(--gold);
+  font-weight: 600;
+}
+
+.sawCount {
+  font-size: 20px;
+  font-weight: 700;
+  color: var(--heading);
+}
+
+.sawToday {
+  font-size: 12px;
+  color: var(--green);
 }

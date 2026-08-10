@@ -47,3 +47,94 @@ a {
   color: inherit;
   text-decoration: none;
 }
+
+/* ── shared primitives (artifact look) ── */
+
+.card {
+  background: var(--card);
+  border: 1px solid var(--line);
+  border-radius: 10px;
+}
+
+.label {
+  font-size: 12px;
+  font-weight: 500;
+  color: var(--gold);
+  display: block;
+  margin-bottom: 6px;
+}
+
+.sub {
+  font-size: 12.5px;
+  color: var(--dim);
+  line-height: 1.6;
+}
+
+.kicker {
+  font-size: 11.5px;
+  color: var(--gold);
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+}
+
+.h1 {
+  font-size: 25px;
+  font-weight: 700;
+  letter-spacing: -0.025em;
+  color: var(--heading);
+}
+
+input,
+textarea,
+select {
+  width: 100%;
+  padding: 11px;
+  background: var(--bg);
+  border: 1px solid var(--line);
+  border-radius: 7px;
+  color: var(--text);
+  font-size: 14px;
+  outline: none;
+  font-family: inherit;
+  color-scheme: dark;
+}
+
+textarea {
+  resize: vertical;
+  min-height: 74px;
+  line-height: 1.6;
+}
+
+button {
+  font-family: inherit;
+  cursor: pointer;
+}
+
+.btn {
+  padding: 11px 22px;
+  font-size: 14px;
+  background: var(--gold);
+  color: var(--bg);
+  border: none;
+  border-radius: 8px;
+  font-weight: 600;
+}
+
+.btnGhost {
+  padding: 11px 18px;
+  font-size: 14px;
+  background: transparent;
+  color: var(--dim);
+  border: 1px solid var(--line);
+  border-radius: 8px;
+}
+
+.health-GREEN {
+  color: var(--green);
+}
+.health-YELLOW {
+  color: var(--yellow);
+}
+.health-RED {
+  color: var(--red);
+}
