@@ -1,0 +1,32 @@
+.panel {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.row {
+  display: flex;
+  gap: 9px;
+  flex-wrap: wrap;
+}
+
+.row input {
+  flex: 1 1 260px;
+}
+
+.row button {
+  flex: 0 0 auto;
+}
+
+/* Prose readout — preserve the model's paragraph breaks. */
+.readout {
+  white-space: pre-wrap;
+  font-size: 14px;
+  line-height: 1.7;
+  color: var(--body);
+  background: var(--card);
+  border: 1px solid var(--line);
+  border-left: 3px solid var(--gold);
+  border-radius: 8px;
+  padding: 14px 16px;
+}
