@@ -1,3 +1,4 @@
+import { SubmitButton } from "@/components/SubmitButton";
 import { prisma } from "@/lib/prisma";
 import { isoDate } from "@/lib/dates";
 import { addCommitment, addContribution, addPotential, createPerson } from "@/app/actions";
@@ -63,7 +64,7 @@ export async function PeopleStep() {
     >
       {people.length > 0 && (
         <section className={shared.createCard}>
-          <span className={shared.sectionLabel}>Added so far ({people.length})</span>
+          <h2 className={shared.sectionLabel}>Added so far ({people.length})</h2>
           <div className={styles.added}>
             {people.map((p) => (
               <div key={p.id} className={styles.addedRow}>
@@ -77,9 +78,7 @@ export async function PeopleStep() {
                 </span>
                 <form action={removePerson}>
                   <input type="hidden" name="id" value={p.id} />
-                  <button type="submit" className={shared.tinyBtn}>
-                    remove
-                  </button>
+                  <SubmitButton className={shared.tinyBtn} pendingLabel="…">remove</SubmitButton>
                 </form>
               </div>
             ))}
@@ -88,49 +87,47 @@ export async function PeopleStep() {
       )}
 
       <form action={createPerson} className={shared.createCard}>
-        <span className={shared.sectionLabel}>Add a person</span>
+        <h2 className={shared.sectionLabel}>Add a person</h2>
         <div className={shared.formGrid}>
           <div className={shared.full}>
-            <span className="label">Name</span>
-            <input name="name" placeholder="How you'd say it to them" />
+            <label className="label">Name
+            <input name="name" placeholder="How you'd say it to them" /></label>
           </div>
           <div>
-            <span className="label">Title</span>
-            <input name="title" />
+            <label className="label">Title
+            <input name="title" /></label>
           </div>
           <div>
-            <span className="label">Employer</span>
-            <input name="employer" />
+            <label className="label">Employer
+            <input name="employer" /></label>
           </div>
           <div>
-            <span className="label">Ring</span>
+            <label className="label">Ring
             <select name="ring" defaultValue="WORKING">
               {RINGS.map((r) => (
                 <option key={r.value} value={r.value}>
                   {r.label}
                 </option>
               ))}
-            </select>
+            </select></label>
           </div>
           <div>
-            <span className="label">Stage</span>
+            <label className="label">Stage
             <select name="stage" defaultValue="MAINTAIN">
               {STAGES.map((s) => (
                 <option key={s.value} value={s.value}>
                   {s.label}
                 </option>
               ))}
-            </select>
+            </select></label>
           </div>
           <div className={shared.full}>
-            <span className="label">How you met / origin</span>
-            <input name="origin" placeholder="Where this started" />
+            <label className="label">How you met / origin
+            <input name="origin" placeholder="Where this started" /></label>
           </div>
         </div>
         <div className={shared.actionsRow}>
-          <button type="submit" className="btnGhost">
-            Add person
-          </button>
+          <SubmitButton className="btnGhost">Add person</SubmitButton>
         </div>
         <p className="sub">
           Rings, engines, node type and cadence are all editable in the People tab — add the name
@@ -143,7 +140,7 @@ export async function PeopleStep() {
         <details key={p.id} className={shared.createCard}>
           <summary className={shared.sectionLabel}>{p.name} — the ledger</summary>
 
-          <span className="label">Contributions you&apos;ve given</span>
+          <h2 className="label">Contributions you&apos;ve given</h2>
           {p.given.map((c) => (
             <div key={c.id} className={styles.addedRow}>
               <span className={styles.addedMeta}>{isoDate(c.date)}</span>
@@ -162,9 +159,7 @@ export async function PeopleStep() {
               ))}
             </select>
             <input name="text" placeholder="What you gave" />
-            <button type="submit" className="btnGhost">
-              Add
-            </button>
+            <SubmitButton className="btnGhost">Add</SubmitButton>
           </form>
 
           <span className="label" style={{ marginTop: 14, display: "block" }}>
@@ -180,9 +175,7 @@ export async function PeopleStep() {
             <input type="hidden" name="personId" value={p.id} />
             <input name="text" placeholder="What you said you'd do" />
             <input type="date" name="due" style={{ flex: "0 0 150px" }} />
-            <button type="submit" className="btnGhost">
-              Add
-            </button>
+            <SubmitButton className="btnGhost">Add</SubmitButton>
           </form>
 
           <span className="label" style={{ marginTop: 14, display: "block" }}>
@@ -196,9 +189,7 @@ export async function PeopleStep() {
           <form action={addPotential} className={shared.addForm}>
             <input type="hidden" name="personId" value={p.id} />
             <input name="text" placeholder="Something you could do for them" />
-            <button type="submit" className="btnGhost">
-              Add
-            </button>
+            <SubmitButton className="btnGhost">Add</SubmitButton>
           </form>
         </details>
       ))}
@@ -210,9 +201,7 @@ export async function PeopleStep() {
           full ledger.
         </Later>
         <div className={shared.actionsRow}>
-          <button type="submit" className="btn">
-            Next — the rhythm
-          </button>
+          <SubmitButton>Next — the rhythm</SubmitButton>
         </div>
       </form>
     </Shell>

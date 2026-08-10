@@ -57,7 +57,7 @@ export function RhythmStep() {
       ))}
 
       <section className={shared.createCard}>
-        <span className={shared.sectionLabel}>What can stay empty for now</span>
+        <h2 className={shared.sectionLabel}>What can stay empty for now</h2>
         <p className="sub">
           <strong>Weekly review and retro</strong> — these are dated records that accrue as you use
           the system; there&apos;s nothing to enter up front. The retro needs a quarter of history

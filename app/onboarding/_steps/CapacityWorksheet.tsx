@@ -77,7 +77,8 @@ export function CapacityWorksheet({
           it is a realistic ceiling for deliberate outcome work — and your renewal practices come
           out of this same pool, which the next screens will hold you to.
         </p>
-        <span className="label">Weekly hours for outcome work</span>
+        <label className="label">
+          Weekly hours for outcome work
         <div style={{ display: "flex", gap: 11, alignItems: "center", flexWrap: "wrap" }}>
           <input
             type="number"
@@ -92,6 +93,7 @@ export function CapacityWorksheet({
             hours / week{budget === "" && ` · suggested from your ${slack}h slack`}
           </span>
         </div>
+        </label>
         {tight && (
           <p className="sub" style={{ color: "var(--yellow)", marginTop: 10 }}>
             That&apos;s most of your remaining slack, and renewal still has to come out of

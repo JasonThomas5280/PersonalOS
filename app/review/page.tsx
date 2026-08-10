@@ -1,3 +1,4 @@
+import { IconSubmit, SubmitButton } from "@/components/SubmitButton";
 import {
   addProcessChange,
   createRetro,
@@ -43,41 +44,39 @@ export default async function ReviewPage() {
       </div>
 
       <div className={shared.createCard}>
-        <span className={shared.sectionLabel}>
+        <h2 className={shared.sectionLabel}>
           Week of {isoDate(thisWeek)} {current ? "· saved" : "· not yet done"}
-        </span>
+        </h2>
         <form action={saveWeeklyReview} className={shared.formGrid}>
           <input type="hidden" name="weekStart" value={isoDate(thisWeek)} />
           {FIELDS.map((f) => (
             <div key={f.key} className={shared.full}>
-              <span className="label">{f.label}</span>
-              <textarea name={f.key} defaultValue={current?.[f.key] ?? ""} rows={2} />
+              <label className="label">{f.label}
+              <textarea name={f.key} defaultValue={current?.[f.key] ?? ""} rows={2} /></label>
             </div>
           ))}
           <div>
-            <span className="label">Overall health</span>
+            <label className="label">Overall health
             <select name="health" defaultValue={current?.health ?? ""}>
               <option value="">not set</option>
               <option value="GREEN">green</option>
               <option value="YELLOW">yellow</option>
               <option value="RED">red</option>
-            </select>
+            </select></label>
           </div>
           <div className={shared.full}>
-            <span className="label">If not green: why, and the recovery plan</span>
-            <textarea name="healthNote" defaultValue={current?.healthNote ?? ""} rows={2} />
+            <label className="label">If not green: why, and the recovery plan
+            <textarea name="healthNote" defaultValue={current?.healthNote ?? ""} rows={2} /></label>
           </div>
           <div className={`${shared.full} ${shared.actionsRow}`}>
-            <button type="submit" className="btn">
-              Save weekly review
-            </button>
+            <SubmitButton>Save weekly review</SubmitButton>
           </div>
         </form>
       </div>
 
       {past.length > 0 && (
         <section>
-          <div className={shared.groupHead}>Past weeks</div>
+          <h2 className={shared.groupHead}>Past weeks</h2>
           {past.map((r) => (
             <details key={r.id} className={`card ${shared.item}`} style={{ marginBottom: 9 }}>
               <summary>
@@ -91,7 +90,7 @@ export default async function ReviewPage() {
               <div className={shared.body}>
                 {FIELDS.filter((f) => r[f.key]).map((f) => (
                   <div key={f.key}>
-                    <span className={shared.sectionLabel}>{f.label}</span>
+                    <h2 className={shared.sectionLabel}>{f.label}</h2>
                     <div className="sub" style={{ whiteSpace: "pre-wrap" }}>
                       {r[f.key]}
                     </div>
@@ -105,7 +104,7 @@ export default async function ReviewPage() {
       )}
 
       <section>
-        <div className={shared.groupHead}>Quarterly retros</div>
+        <h2 className={shared.groupHead}>Quarterly retros</h2>
         {retros.map((retro) => (
           <details key={retro.id} className={`card ${shared.item}`} style={{ marginBottom: 9 }}>
             <summary>
@@ -121,34 +120,34 @@ export default async function ReviewPage() {
               <form action={updateRetro} className={shared.formGrid}>
                 <input type="hidden" name="id" value={retro.id} />
                 <div className={shared.full}>
-                  <span className="label">What went well</span>
-                  <textarea name="wentWell" defaultValue={retro.wentWell} rows={2} />
+                  <label className="label">What went well
+                  <textarea name="wentWell" defaultValue={retro.wentWell} rows={2} /></label>
                 </div>
                 <div className={shared.full}>
-                  <span className="label">What didn&apos;t</span>
-                  <textarea name="didnt" defaultValue={retro.didnt} rows={2} />
+                  <label className="label">What didn&apos;t
+                  <textarea name="didnt" defaultValue={retro.didnt} rows={2} /></label>
                 </div>
                 <div className={shared.full}>
-                  <span className="label">Root causes — not symptoms</span>
-                  <textarea name="rootCauses" defaultValue={retro.rootCauses} rows={2} />
+                  <label className="label">Root causes — not symptoms
+                  <textarea name="rootCauses" defaultValue={retro.rootCauses} rows={2} /></label>
                 </div>
                 <div className={`${shared.full} ${shared.actionsRow}`}>
-                  <button type="submit" className="btn">
-                    Save
-                  </button>
+                  <SubmitButton>Save</SubmitButton>
                 </div>
               </form>
               <div>
-                <span className={shared.sectionLabel}>
+                <h2 className={shared.sectionLabel}>
                   Process changes — mechanisms, not goals
-                </span>
+                </h2>
                 {retro.changes.map((c) => (
                   <div key={c.id} className={shared.listRow}>
                     <form action={toggleProcessChange}>
                       <input type="hidden" name="id" value={c.id} />
-                      <button type="submit" className={shared.tinyBtn}>
-                        {c.done ? "✓" : "○"}
-                      </button>
+                      <IconSubmit
+                        className={shared.tinyBtn}
+                        glyph={c.done ? "✓" : "○"}
+                        label={`${c.done ? "Mark not done" : "Mark done"}: ${c.change}`}
+                      />
                     </form>
                     <span style={c.done ? { textDecoration: "line-through" } : undefined}>
                       {c.change}
@@ -162,21 +161,17 @@ export default async function ReviewPage() {
                   <input name="change" placeholder="A mechanism with an owner (you)" />
                   <input name="why" placeholder="Which root cause it addresses" />
                   <input type="date" name="target" style={{ flex: "0 0 150px" }} />
-                  <button type="submit" className="btnGhost">
-                    Add
-                  </button>
+                  <SubmitButton className="btnGhost">Add</SubmitButton>
                 </form>
               </div>
             </div>
           </details>
         ))}
         <div className={shared.createCard}>
-          <span className={shared.sectionLabel}>New retro</span>
+          <h2 className={shared.sectionLabel}>New retro</h2>
           <form action={createRetro} className={shared.addForm}>
             <input name="quarter" placeholder='e.g. "Q3 2026"' required />
-            <button type="submit" className="btn">
-              Start retro
-            </button>
+            <SubmitButton>Start retro</SubmitButton>
           </form>
         </div>
       </section>

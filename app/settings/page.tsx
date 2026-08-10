@@ -1,3 +1,4 @@
+import { SubmitButton } from "@/components/SubmitButton";
 import { updateProfile } from "@/app/actions";
 import { prisma } from "@/lib/prisma";
 import shared from "../tabs.module.css";
@@ -18,34 +19,32 @@ export default async function SettingsPage() {
       </div>
 
       <div className={shared.createCard}>
-        <span className={shared.sectionLabel}>Mission & capacity</span>
+        <h2 className={shared.sectionLabel}>Mission & capacity</h2>
         <form action={updateProfile} className={shared.formGrid}>
           <div className={shared.full}>
-            <span className="label">Mission — reread it in five years without flinching</span>
-            <textarea name="mission" defaultValue={profile?.mission ?? ""} rows={3} />
+            <label className="label">Mission — reread it in five years without flinching
+            <textarea name="mission" defaultValue={profile?.mission ?? ""} rows={3} /></label>
           </div>
           <div>
-            <span className="label">Capacity budget — hours/week for outcome work</span>
+            <label className="label">Capacity budget — hours/week for outcome work
             <input
               type="number"
               step="0.5"
               name="capacityBudget"
               defaultValue={profile ? Number(profile.capacityBudget) : 12}
-            />
+            /></label>
             <div className="sub" style={{ marginTop: 6 }}>
               Currently committed: {committed}h across {outcomes.length} active outcomes.
             </div>
           </div>
           <div className={`${shared.full} ${shared.actionsRow}`}>
-            <button type="submit" className="btn">
-              Save
-            </button>
+            <SubmitButton>Save</SubmitButton>
           </div>
         </form>
       </div>
 
       <div className={shared.createCard}>
-        <span className={shared.sectionLabel}>Export</span>
+        <h2 className={shared.sectionLabel}>Export</h2>
         <p className="sub">
           Everything as raw JSON, in the same shape the seed script loads — an export can be
           dropped into <code>seed/initial-state.json</code> and re-seeded. Keep a copy somewhere
@@ -59,7 +58,7 @@ export default async function SettingsPage() {
       </div>
 
       <div className={shared.createCard}>
-        <span className={shared.sectionLabel}>Roles</span>
+        <h2 className={shared.sectionLabel}>Roles</h2>
         <p className="sub">Add, edit, and remove roles in the Roles tab — including health, missions, and review cadence.</p>
       </div>
     </div>

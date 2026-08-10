@@ -119,7 +119,7 @@ export function CaptureClient({
   return (
     <>
       <section className={shared.createCard}>
-        <span className={shared.sectionLabel}>The dump</span>
+        <h2 className={shared.sectionLabel}>The dump</h2>
         <p className="sub">
           Within ten minutes of the conversation, while you still remember what was actually said.
           Ten minutes later your memory has already started editing.
@@ -150,7 +150,7 @@ export function CaptureClient({
 
       {result && (
         <section className={shared.createCard}>
-          <span className={shared.sectionLabel}>Filed</span>
+          <h2 className={shared.sectionLabel}>Filed</h2>
           <p className="sub">
             {result.raid} RAID {result.raid === 1 ? "item" : "items"} · {result.people} new{" "}
             {result.people === 1 ? "person" : "people"} · {result.contributions} contributions ·{" "}
@@ -179,7 +179,7 @@ export function CaptureClient({
 
           {raid.length > 0 && (
             <section className={shared.createCard}>
-              <span className={shared.sectionLabel}>RAID ({raid.length})</span>
+              <h2 className={shared.sectionLabel}>RAID ({raid.length})</h2>
               {raid.map((r, i) => (
                 <div key={i} className={styles.proposal} data-on={r.on}>
                   <label className={styles.head}>
@@ -192,33 +192,33 @@ export function CaptureClient({
                   </label>
                   <div className={shared.formGrid}>
                     <div className={shared.full}>
-                      <span className="label">Description</span>
+                      <label className="label">Description
                       <input
                         value={r.value.description}
                         onChange={(e) => patchRaid(i, { description: e.target.value })}
-                      />
+                      /></label>
                     </div>
                     <div className={shared.full}>
-                      <span className="label">
+                      <label className="label">
                         {r.value.type === "DECISION" ? "Reasoning" : "Impact"}
-                      </span>
+                      
                       <textarea
                         rows={2}
                         value={r.value.impact}
                         onChange={(e) => patchRaid(i, { impact: e.target.value })}
-                      />
+                      /></label>
                     </div>
                     {r.value.type === "RISK" && (
                       <>
                         <div className={shared.full}>
-                          <span className="label">Trigger</span>
+                          <label className="label">Trigger
                           <input
                             value={r.value.trigger}
                             onChange={(e) => patchRaid(i, { trigger: e.target.value })}
-                          />
+                          /></label>
                         </div>
                         <div>
-                          <span className="label">Severity</span>
+                          <label className="label">Severity
                           <select
                             value={r.value.severity}
                             onChange={(e) => patchRaid(i, { severity: e.target.value })}
@@ -228,10 +228,10 @@ export function CaptureClient({
                                 {s || "not set"}
                               </option>
                             ))}
-                          </select>
+                          </select></label>
                         </div>
                         <div>
-                          <span className="label">Probability</span>
+                          <label className="label">Probability
                           <select
                             value={r.value.probability}
                             onChange={(e) => patchRaid(i, { probability: e.target.value })}
@@ -241,30 +241,30 @@ export function CaptureClient({
                                 {p ? p.toLowerCase() : "not set"}
                               </option>
                             ))}
-                          </select>
+                          </select></label>
                         </div>
                       </>
                     )}
                     {r.value.type === "DECISION" && (
                       <div className={shared.full}>
-                        <span className="label">Rejected alternatives</span>
+                        <label className="label">Rejected alternatives
                         <textarea
                           rows={2}
                           value={r.value.alternatives}
                           onChange={(e) => patchRaid(i, { alternatives: e.target.value })}
-                        />
+                        /></label>
                       </div>
                     )}
                     <div>
-                      <span className="label">Due</span>
+                      <label className="label">Due
                       <input
                         type="date"
                         value={r.value.due}
                         onChange={(e) => patchRaid(i, { due: e.target.value })}
-                      />
+                      /></label>
                     </div>
                     <div>
-                      <span className="label">Role</span>
+                      <label className="label">Role
                       <select
                         value={r.value.roleId ?? ""}
                         onChange={(e) => patchRaid(i, { roleId: e.target.value })}
@@ -275,10 +275,10 @@ export function CaptureClient({
                             {role.icon} {role.label}
                           </option>
                         ))}
-                      </select>
+                      </select></label>
                     </div>
                     <div>
-                      <span className="label">Outcome</span>
+                      <label className="label">Outcome
                       <select
                         value={r.value.outcomeId ?? ""}
                         onChange={(e) => patchRaid(i, { outcomeId: e.target.value })}
@@ -289,7 +289,7 @@ export function CaptureClient({
                             {o.result}
                           </option>
                         ))}
-                      </select>
+                      </select></label>
                     </div>
                   </div>
                 </div>
@@ -299,7 +299,7 @@ export function CaptureClient({
 
           {people.length > 0 && (
             <section className={shared.createCard}>
-              <span className={shared.sectionLabel}>People ({people.length})</span>
+              <h2 className={shared.sectionLabel}>People ({people.length})</h2>
               {people.map((p, i) => (
                 <div key={i} className={styles.proposal} data-on={p.on}>
                   <label className={styles.head}>
@@ -317,32 +317,32 @@ export function CaptureClient({
                   </label>
                   <div className={shared.formGrid}>
                     <div className={shared.full}>
-                      <span className="label">Name</span>
+                      <label className="label">Name
                       <input
                         value={p.value.name}
                         onChange={(e) => patchPerson(i, { name: e.target.value })}
-                      />
+                      /></label>
                     </div>
                     {p.value.situationNote && (
                       <div className={shared.full}>
-                        <span className="label">Situation — appended, never overwritten</span>
+                        <label className="label">Situation — appended, never overwritten
                         <input
                           value={p.value.situationNote}
                           onChange={(e) => patchPerson(i, { situationNote: e.target.value })}
-                        />
+                        /></label>
                       </div>
                     )}
                     {p.value.contributionGiven && (
                       <>
                         <div className={shared.full}>
-                          <span className="label">Contribution you gave</span>
+                          <label className="label">Contribution you gave
                           <input
                             value={p.value.contributionGiven}
                             onChange={(e) => patchPerson(i, { contributionGiven: e.target.value })}
-                          />
+                          /></label>
                         </div>
                         <div>
-                          <span className="label">Category</span>
+                          <label className="label">Category
                           <select
                             value={p.value.contributionCategory ?? "INFORMATIONAL"}
                             onChange={(e) => patchPerson(i, { contributionCategory: e.target.value })}
@@ -352,26 +352,26 @@ export function CaptureClient({
                                 {c.toLowerCase()}
                               </option>
                             ))}
-                          </select>
+                          </select></label>
                         </div>
                       </>
                     )}
                     {p.value.commitmentOwed && (
                       <>
                         <div className={shared.full}>
-                          <span className="label">Commitment you now owe</span>
+                          <label className="label">Commitment you now owe
                           <input
                             value={p.value.commitmentOwed}
                             onChange={(e) => patchPerson(i, { commitmentOwed: e.target.value })}
-                          />
+                          /></label>
                         </div>
                         <div>
-                          <span className="label">Due</span>
+                          <label className="label">Due
                           <input
                             type="date"
                             value={p.value.commitmentDue}
                             onChange={(e) => patchPerson(i, { commitmentDue: e.target.value })}
-                          />
+                          /></label>
                         </div>
                       </>
                     )}
