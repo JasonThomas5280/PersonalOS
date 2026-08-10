@@ -8,7 +8,10 @@ generator client {
 
 datasource db {
   provider = "postgresql"
-  url      = env("DATABASE_URL")
+  // Pooled connection (pgbouncer) for app runtime.
+  url       = env("DATABASE_URL")
+  // Direct connection for migrations — pgbouncer breaks advisory locks.
+  directUrl = env("DIRECT_URL")
 }
 
 /* ───────────────────────── ENUMS ───────────────────────── */
@@ -141,7 +144,22 @@ model Profile {
   id             Int     @id @default(1)
   mission        String  @default("")
   capacityBudget Decimal @default(12) @db.Decimal(5, 1) // hours/week for outcome work
-  updatedAt      DateTime @updatedAt
+
+  // Capacity worksheet — the 168-hour breakdown the budget is derived from.
+  // Kept so revisiting capacity when the season changes starts from the last
+  // honest numbers rather than from memory.
+  sleepHours     Decimal? @db.Decimal(5, 1)
+  workHours      Decimal? @db.Decimal(5, 1)
+  commuteHours   Decimal? @db.Decimal(5, 1)
+  familyHours    Decimal? @db.Decimal(5, 1)
+  householdHours Decimal? @db.Decimal(5, 1)
+  existingHours  Decimal? @db.Decimal(5, 1)
+
+  // Set when the guided setup is finished. Onboarding persists per step, so
+  // emptiness is not a usable "needs onboarding" signal once step 2 has run.
+  onboardedAt DateTime?
+
+  updatedAt DateTime @updatedAt
 }
 
 /* ───────────────────────── ROLES ───────────────────────── */

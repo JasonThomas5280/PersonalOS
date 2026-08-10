@@ -6,6 +6,7 @@ import styles from "./NavTabs.module.css";
 
 const TABS = [
   { href: "/", label: "Today" },
+  { href: "/capture", label: "Capture" },
   { href: "/roles", label: "Roles" },
   { href: "/outcomes", label: "Outcomes" },
   { href: "/raid", label: "RAID" },

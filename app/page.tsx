@@ -1,6 +1,8 @@
+import Link from "next/link";
 import { redirect } from "next/navigation";
 import { saveBigThree, toggleBigThreeDone, toggleSawSession } from "@/app/actions";
 import { AlertsPanel } from "@/components/AlertsPanel";
+import { CoachPanel } from "@/components/CoachPanel";
 import { computeAlerts, CADENCE_PER_28D } from "@/lib/alerts";
 import { daysSince, isoDate, todayUTC } from "@/lib/dates";
 import { prisma } from "@/lib/prisma";
@@ -11,11 +13,16 @@ export const dynamic = "force-dynamic";
 
 export default async function Today() {
   // First run: empty system → onboarding.
-  const [profileCount, roleCount] = await Promise.all([
+  const [profileCount, roleCount, profile] = await Promise.all([
     prisma.profile.count(),
     prisma.role.count(),
+    prisma.profile.findUnique({ where: { id: 1 }, select: { onboardedAt: true } }),
   ]);
   if (profileCount === 0 && roleCount === 0) redirect("/onboarding");
+  // Onboarding persists per step, so a half-finished setup leaves the system
+  // non-empty and the redirect above stops firing. Offer the way back instead
+  // of hijacking navigation — the data that is here is still usable.
+  const setupIncomplete = profile?.onboardedAt == null;
 
   const now = todayUTC();
   const [snapshot, bigThree, sawPractices, roles, outcomes] = await Promise.all([
@@ -35,9 +42,21 @@ export default async function Today() {
         <h1 className="h1">Today</h1>
       </div>
 
+      {setupIncomplete && (
+        <Link href="/onboarding" className={styles.resumeBanner}>
+          <strong>Setup isn&apos;t finished.</strong> Pick up where you left off — it adds to
+          what&apos;s already here rather than replacing it.
+        </Link>
+      )}
+
       <section>
         <span className="label">Alerts — derived, never stored</span>
         <AlertsPanel alerts={alerts} />
+      </section>
+
+      <section>
+        <span className="label">Coach — a readout over everything above</span>
+        <CoachPanel />
       </section>
 
       <section>

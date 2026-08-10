@@ -152,6 +152,7 @@ export default async function ReviewPage() {
                     </form>
                     <span style={c.done ? { textDecoration: "line-through" } : undefined}>
                       {c.change}
+                      {c.why && <span className="sub"> — {c.why}</span>}
                     </span>
                     {c.target && <span className="sub">by {isoDate(c.target)}</span>}
                   </div>
@@ -159,6 +160,7 @@ export default async function ReviewPage() {
                 <form action={addProcessChange} className={shared.addForm}>
                   <input type="hidden" name="retroId" value={retro.id} />
                   <input name="change" placeholder="A mechanism with an owner (you)" />
+                  <input name="why" placeholder="Which root cause it addresses" />
                   <input type="date" name="target" style={{ flex: "0 0 150px" }} />
                   <button type="submit" className="btnGhost">
                     Add

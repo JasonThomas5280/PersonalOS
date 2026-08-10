@@ -3,9 +3,12 @@
 A single-user life-management app that applies enterprise implementation-PM discipline
 (phases, RAID logs, capacity planning, critical path) to personal life, blended with
 Covey's 7 Habits (roles, quadrants, renewal) and Tony Robbins' RPM (Result / Purpose /
-Massive Action Plan). Migrated from a Claude.ai artifact prototype; the seed data in
-`seed/initial-state.json` is the exported state of that prototype and defines the
-canonical data shapes.
+Massive Action Plan). Migrated from a Claude.ai artifact prototype.
+
+`seed/initial-state.json` is **placeholder sample data**, not a real export — it defines
+the canonical data shapes and exercises every table, nothing more. The prototype's
+onboarding was never run, so no artifact export exists. Real data comes from the guided
+setup at `/onboarding`, or by replacing that file and running `npm run seed`.
 
 ## Stack
 
@@ -78,7 +81,13 @@ canonical data shapes.
 - `npm run dev` — local dev
 - `npx prisma migrate dev` — create/apply migration after schema edits
 - `npm run seed` — load seed/initial-state.json
+- `npm run verify` — row counts for all 19 tables, three deep spot-checks, and a
+  round-trip diff of `/api/export` against the seed file. Compares against the seed
+  file only when the database actually came from it; otherwise reports counts alone.
 - `npm test` — Vitest; the alerts engine suite must stay green
+
+Postgres runs on Neon, which pools through pgbouncer — migrations need the unpooled
+connection, so `DATABASE_URL` (pooled) and `DIRECT_URL` (unpooled) are both required.
 
 ## Don't
 

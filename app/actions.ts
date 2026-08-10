@@ -11,10 +11,8 @@ import type {
   Confidence,
   Engine,
   Health,
-  IssueClassification,
   NodeType,
   Phase,
-  Probability,
   Quadrant,
   RaidStatus,
   RaidType,
@@ -22,11 +20,11 @@ import type {
   Ring,
   SawCadence,
   SawDimension,
-  Severity,
   Stage,
 } from "@prisma/client";
 import { prisma } from "@/lib/prisma";
 import { todayUTC, toUTCDate, weekStart } from "@/lib/dates";
+import { raidFieldsForType } from "@/lib/raid";
 
 function refresh() {
   revalidatePath("/", "layout");
@@ -269,22 +267,17 @@ export async function setDependencies(fd: FormData) {
 export async function createRaidItem(fd: FormData) {
   const description = str(fd, "description");
   if (!description) throw new Error("Description is required.");
+  const type = str(fd, "type") as RaidType;
   await prisma.raidItem.create({
     data: {
-      type: str(fd, "type") as RaidType,
+      type,
       description,
       impact: str(fd, "impact"),
       status: (str(fd, "status") || "OPEN") as RaidStatus,
       owner: str(fd, "owner") || "Me",
       due: dateOrNull(fd, "due"),
-      trigger: str(fd, "trigger"),
-      severity: enumOrNull<Severity>(fd, "severity"),
-      probability: enumOrNull<Probability>(fd, "probability"),
-      classification: enumOrNull<IssueClassification>(fd, "classification"),
-      escalation: str(fd, "escalation"),
-      alternatives: str(fd, "alternatives"),
-      decidedBy: str(fd, "decidedBy"),
-      decidedOn: dateOrNull(fd, "decidedOn"),
+      // Only the columns this type owns — see lib/raid.ts.
+      ...raidFieldsForType(type, fd),
       roleId: idOrNull(fd, "roleId"),
       outcomeId: idOrNull(fd, "outcomeId"),
       personId: idOrNull(fd, "personId"),
@@ -301,6 +294,14 @@ export async function updateRaidItem(fd: FormData) {
   if (status === "CLOSED" && !resolution) {
     throw new Error("Closing a RAID item requires a resolution note.");
   }
+  // `type` is immutable and absent from the edit form, so it comes from the row.
+  // The edit form only renders fields for this type; writing the others would
+  // blank whatever a different type owns.
+  const existing = await prisma.raidItem.findUnique({
+    where: { id },
+    select: { type: true },
+  });
+  if (!existing) throw new Error("RAID item not found.");
   await prisma.raidItem.update({
     where: { id },
     data: {
@@ -309,14 +310,7 @@ export async function updateRaidItem(fd: FormData) {
       status,
       owner: str(fd, "owner") || "Me",
       due: dateOrNull(fd, "due"),
-      trigger: str(fd, "trigger"),
-      severity: enumOrNull<Severity>(fd, "severity"),
-      probability: enumOrNull<Probability>(fd, "probability"),
-      classification: enumOrNull<IssueClassification>(fd, "classification"),
-      escalation: str(fd, "escalation"),
-      alternatives: str(fd, "alternatives"),
-      decidedBy: str(fd, "decidedBy"),
-      decidedOn: dateOrNull(fd, "decidedOn"),
+      ...raidFieldsForType(existing.type, fd),
       resolution,
       closedOn:
         status === "CLOSED" ? todayUTC() : null,

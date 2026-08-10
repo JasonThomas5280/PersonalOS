@@ -118,3 +118,20 @@
   color: var(--green);
   border-color: color-mix(in srgb, var(--green) 40%, transparent);
 }
+
+/* Shown until Profile.onboardedAt is set — setup persists per step, so an
+   abandoned run leaves a usable but incomplete system. */
+.resumeBanner {
+  display: block;
+  padding: 11px 13px;
+  border-radius: 8px;
+  background: #332c1722;
+  border: 1px solid #facc1533;
+  color: var(--gold);
+  font-size: 12.5px;
+  line-height: 1.6;
+}
+
+.resumeBanner:hover {
+  border-color: var(--gold);
+}
