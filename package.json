@@ -14,18 +14,19 @@
     "seed": "tsx seed/seed.ts"
   },
   "dependencies": {
+    "@anthropic-ai/sdk": "^0.116.0",
     "@prisma/client": "^6.19.3",
     "next": "16.3.0",
     "react": "19.2.8",
     "react-dom": "19.2.8"
   },
   "devDependencies": {
-    "prisma": "^6.19.3",
     "@types/node": "^20",
     "@types/react": "^19",
     "@types/react-dom": "^19",
     "eslint": "^9",
     "eslint-config-next": "16.3.0",
+    "prisma": "^6.19.3",
     "tsx": "^4.23.11",
     "typescript": "^5",
     "vitest": "^4.1.10"

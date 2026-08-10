@@ -1,0 +1,46 @@
+.wrap {
+  max-width: 640px;
+  margin: 0 auto;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  padding-top: 18px;
+}
+
+.body {
+  font-size: 14.5px;
+  color: var(--body);
+  line-height: 1.7;
+}
+
+.form {
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+}
+
+.roleRow {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  padding: 10px 0;
+  border-bottom: 1px solid var(--line);
+}
+
+.roleCheck {
+  display: flex;
+  align-items: baseline;
+  gap: 9px;
+  flex-wrap: wrap;
+  cursor: pointer;
+  font-size: 14px;
+  color: var(--text);
+}
+
+.roleCheck input {
+  width: auto;
+}
+
+.roleMission {
+  font-size: 13px;
+}

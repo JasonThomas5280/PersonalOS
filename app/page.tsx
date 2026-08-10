@@ -1,3 +1,4 @@
+import { redirect } from "next/navigation";
 import { saveBigThree, toggleBigThreeDone, toggleSawSession } from "@/app/actions";
 import { AlertsPanel } from "@/components/AlertsPanel";
 import { computeAlerts, CADENCE_PER_28D } from "@/lib/alerts";
@@ -9,6 +10,13 @@ import styles from "./page.module.css";
 export const dynamic = "force-dynamic";
 
 export default async function Today() {
+  // First run: empty system → onboarding.
+  const [profileCount, roleCount] = await Promise.all([
+    prisma.profile.count(),
+    prisma.role.count(),
+  ]);
+  if (profileCount === 0 && roleCount === 0) redirect("/onboarding");
+
   const now = todayUTC();
   const [snapshot, bigThree, sawPractices, roles, outcomes] = await Promise.all([
     loadAlertsSnapshot(now),
