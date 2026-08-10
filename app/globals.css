@@ -4,11 +4,13 @@
   color-scheme: dark;
   --bg: #0c0c16;
   --card: #14142a;
-  --line: #23233f;
+  /* 3:1 against --card so control boundaries are actually visible (WCAG 1.4.11). */
+  --line: #3a3a5e;
   --gold: #c9b88c;
   --text: #e6e2dc;
   --dim: #8b8ba3;
-  --faint: #565676;
+  /* 4.6:1 — this carries real content (section titles, footnotes), not decoration. */
+  --faint: #7b7b96;
   --heading: #f0ede8;
   --body: #bdbac8;
   --green: #4ade80;
@@ -48,6 +50,26 @@ a {
   text-decoration: none;
 }
 
+/* Form controls clear their outline below, so every focusable thing needs this
+   back or keyboard users have no idea where they are (WCAG 2.4.7). */
+:where(input, textarea, select, button, a, summary, [tabindex]):focus-visible {
+  outline: 2px solid var(--gold);
+  outline-offset: 2px;
+  border-radius: 4px;
+}
+
+/* Visually hidden but announced — for icon-only controls and severity words. */
+.srOnly {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+}
+
 /* ── shared primitives (artifact look) ── */
 
 .card {
@@ -62,6 +84,33 @@ a {
   color: var(--gold);
   display: block;
   margin-bottom: 6px;
+}
+
+/* Controls sit inside their <label>, which associates them without needing an
+   id on every field. Restores the gap the label's margin-bottom used to give,
+   and stops the label's size/weight/colour inheriting into the control. */
+.label > :is(input, select, textarea) {
+  margin-top: 6px;
+  font-size: 16px;
+  font-weight: 400;
+  color: var(--text);
+}
+
+label.label {
+  cursor: pointer;
+}
+
+/* A group of checkboxes is labelled by a <legend>, not a <label> — a label can
+   only name one control. Reset the browser's default box. */
+fieldset {
+  border: 0;
+  padding: 0;
+  margin: 0;
+  min-width: 0;
+}
+
+legend.label {
+  padding: 0;
 }
 
 .sub {
@@ -93,10 +142,22 @@ select {
   border: 1px solid var(--line);
   border-radius: 7px;
   color: var(--text);
-  font-size: 14px;
+  /* 16px: iOS Safari zooms the viewport on focus for anything smaller. */
+  font-size: 16px;
   outline: none;
   font-family: inherit;
   color-scheme: dark;
+}
+
+input::placeholder,
+textarea::placeholder {
+  color: var(--faint);
+}
+
+/* Native blue checkboxes clash badly with the gold palette. */
+input[type="checkbox"],
+input[type="radio"] {
+  accent-color: var(--gold);
 }
 
 textarea {
@@ -110,23 +171,61 @@ button {
   cursor: pointer;
 }
 
+/* inline-flex so anchors-as-buttons centre correctly without a per-use style. */
+.btn,
+.btnGhost {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 14px;
+  border-radius: 8px;
+  transition: background-color 0.12s ease, border-color 0.12s ease, color 0.12s ease;
+}
+
 .btn {
   padding: 11px 22px;
-  font-size: 14px;
   background: var(--gold);
   color: var(--bg);
   border: none;
-  border-radius: 8px;
   font-weight: 600;
+}
+
+.btn:hover:not(:disabled) {
+  background: color-mix(in srgb, var(--gold) 85%, white);
+}
+
+.btn:active:not(:disabled) {
+  background: color-mix(in srgb, var(--gold) 82%, black);
 }
 
 .btnGhost {
   padding: 11px 18px;
-  font-size: 14px;
   background: transparent;
   color: var(--dim);
   border: 1px solid var(--line);
-  border-radius: 8px;
+}
+
+.btnGhost:hover:not(:disabled) {
+  color: var(--text);
+  border-color: var(--gold);
+}
+
+.btnGhost:active:not(:disabled) {
+  background: color-mix(in srgb, var(--gold) 12%, transparent);
+}
+
+/* Pending state — the button is the only place a server action reports progress. */
+.btn:disabled,
+.btnGhost:disabled {
+  cursor: not-allowed;
+  opacity: 0.6;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  * {
+    transition-duration: 0.01ms !important;
+    animation-duration: 0.01ms !important;
+  }
 }
 
 .health-GREEN {

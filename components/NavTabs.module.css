@@ -9,11 +9,18 @@
 
 .tab,
 .active {
-  padding: 10px 13px;
+  padding: 12px 13px;
   font-size: 13px;
   color: var(--dim);
   border-bottom: 2px solid transparent;
   white-space: nowrap;
+  transition: color 0.12s ease, border-color 0.12s ease;
+}
+
+/* Moving across the primary navigation gave no feedback at all before this. */
+.tab:hover {
+  color: var(--text);
+  border-bottom-color: var(--line);
 }
 
 .active {

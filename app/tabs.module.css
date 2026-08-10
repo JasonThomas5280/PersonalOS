@@ -25,6 +25,28 @@
   display: none;
 }
 
+/* The native triangle is hidden above, so without this the only cue that a row
+   expands is the cursor — invisible on touch. */
+.item > summary::before {
+  content: "▸";
+  color: var(--dim);
+  font-size: 11px;
+  flex: 0 0 auto;
+  transition: transform 0.15s ease;
+}
+
+.item[open] > summary::before {
+  transform: rotate(90deg);
+}
+
+.item > summary:hover {
+  background: color-mix(in srgb, var(--gold) 6%, transparent);
+}
+
+.item > summary:hover::before {
+  color: var(--gold);
+}
+
 .item[open] > summary {
   border-bottom: 1px solid var(--line);
 }
@@ -66,6 +88,33 @@
   border-color: color-mix(in srgb, var(--red) 45%, transparent);
 }
 
+/* Without these, every RAID status except BLOCKED renders identically grey and
+   has to be read word by word. */
+.chipYellow {
+  composes: chip;
+  color: var(--yellow);
+  border-color: color-mix(in srgb, var(--yellow) 45%, transparent);
+}
+
+.chipGreen {
+  composes: chip;
+  color: var(--green);
+  border-color: color-mix(in srgb, var(--green) 45%, transparent);
+}
+
+/* A chip used as a filter link needs a real hit area; a static badge doesn't. */
+.chipLink {
+  composes: chip;
+  padding: 8px 12px;
+  display: inline-flex;
+  align-items: center;
+}
+
+.chipLink:hover {
+  color: var(--text);
+  border-color: var(--gold);
+}
+
 .body {
   padding: 16px;
   display: flex;
@@ -102,9 +151,14 @@
   gap: 6px;
   font-size: 13px;
   color: var(--body);
+  /* The whole label is the tap target, not just the ~13px box. */
+  min-height: 32px;
+  cursor: pointer;
 }
 
-.checks input[type="checkbox"] {
+/* Radios need this too — RaidForm puts them in .checks, and without the match
+   they inherit width:100% from the global input rule and render stretched. */
+.checks input:is([type="checkbox"], [type="radio"]) {
   width: auto;
 }
 
@@ -121,18 +175,40 @@
 }
 
 .tinyBtn {
-  padding: 4px 10px;
-  font-size: 11.5px;
+  padding: 8px 12px;
+  font-size: 12px;
+  min-height: 34px;
+  min-width: 34px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
   border-radius: 6px;
   border: 1px solid var(--line);
   background: transparent;
   color: var(--dim);
+  transition: color 0.12s ease, border-color 0.12s ease, background-color 0.12s ease;
+}
+
+.tinyBtn:hover:not(:disabled) {
+  color: var(--text);
+  border-color: var(--gold);
+}
+
+.tinyBtn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
 }
 
 .dangerBtn {
   composes: tinyBtn;
   color: var(--red);
   border-color: color-mix(in srgb, var(--red) 40%, transparent);
+}
+
+.dangerBtn:hover:not(:disabled) {
+  color: var(--red);
+  border-color: var(--red);
+  background: color-mix(in srgb, var(--red) 12%, transparent);
 }
 
 .addForm {
