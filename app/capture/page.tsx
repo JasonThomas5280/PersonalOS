@@ -18,7 +18,7 @@ export default async function CapturePage() {
   return (
     <div className={shared.stack}>
       <div>
-        <div className="kicker">As it happens · 5 minutes</div>
+        <div className="kicker">As it happens · 5 minutes · AI-assisted</div>
         <h1 className="h1">Capture</h1>
       </div>
 

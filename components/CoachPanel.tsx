@@ -43,7 +43,9 @@ export function CoachPanel() {
           }}
           placeholder="Ask something specific, or leave blank for a general readout"
         />
-        <button type="button" onClick={ask} disabled={loading} className="btnGhost">
+        {/* Gold, not ghost — this was the quietest control on a long page and
+            read as decoration rather than the feature. */}
+        <button type="button" onClick={ask} disabled={loading} className="btn">
           {loading ? "Reading…" : "Ask the coach"}
         </button>
       </div>
@@ -58,8 +60,9 @@ export function CoachPanel() {
 
       {!readout && !error && !loading && (
         <p className="sub">
-          Reads your mission, roles, outcomes, alerts and today&apos;s Big 3, then tells you where
-          things actually stand and one Q2 move for tomorrow.
+          Claude reads your mission, roles, outcomes, alerts and today&apos;s Big 3, then tells you
+          where things actually stand and one Q2 move for tomorrow. Nothing is written — it only
+          reads.
         </p>
       )}
     </div>
