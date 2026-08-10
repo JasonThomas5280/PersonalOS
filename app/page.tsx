@@ -1,3 +1,4 @@
+import { saveBigThree, toggleBigThreeDone, toggleSawSession } from "@/app/actions";
 import { AlertsPanel } from "@/components/AlertsPanel";
 import { computeAlerts, CADENCE_PER_28D } from "@/lib/alerts";
 import { daysSince, isoDate, todayUTC } from "@/lib/dates";
@@ -7,29 +8,16 @@ import styles from "./page.module.css";
 
 export const dynamic = "force-dynamic";
 
-const QUADRANT_LABEL = {
-  Q1: "Q1 · crisis",
-  Q2: "Q2 · investment",
-  Q3: "Q3 · interruption",
-  Q4: "Q4 · waste",
-} as const;
-
 export default async function Today() {
   const now = todayUTC();
-  const [snapshot, bigThree, sawPractices] = await Promise.all([
+  const [snapshot, bigThree, sawPractices, roles, outcomes] = await Promise.all([
     loadAlertsSnapshot(now),
-    prisma.bigThreeItem.findMany({
-      where: { date: now },
-      orderBy: { slot: "asc" },
-      include: { role: true, outcome: true },
-    }),
-    prisma.sawPractice.findMany({
-      orderBy: { dimension: "asc" },
-      include: { sessions: true },
-    }),
+    prisma.bigThreeItem.findMany({ where: { date: now }, orderBy: { slot: "asc" } }),
+    prisma.sawPractice.findMany({ orderBy: { dimension: "asc" }, include: { sessions: true } }),
+    prisma.role.findMany({ orderBy: { sortOrder: "asc" } }),
+    prisma.outcome.findMany({ where: { phase: { not: "CLOSED" } }, orderBy: { createdAt: "asc" } }),
   ]);
   const alerts = computeAlerts(snapshot);
-
   const slots = [0, 1, 2].map((slot) => bigThree.find((b) => b.slot === slot) ?? null);
 
   return (
@@ -45,31 +33,61 @@ export default async function Today() {
       </section>
 
       <section>
-        <span className="label">Big 3</span>
+        <span className="label">Big 3 — three moves that build, not just react</span>
         <div className={styles.bigThree}>
           {slots.map((item, slot) => (
             <div key={slot} className={`card ${styles.slot}`} data-done={item?.done ?? false}>
-              <span className={styles.slotNum}>{slot + 1}</span>
-              {item && item.text ? (
-                <div className={styles.slotBody}>
-                  <span className={styles.slotText}>{item.text}</span>
-                  <span className={`sub ${styles.slotMeta}`}>
-                    {item.role && (
-                      <span>
-                        {item.role.icon} {item.role.label}
-                      </span>
-                    )}
-                    {item.outcome && <span>→ {item.outcome.result}</span>}
-                    {item.quadrant && (
-                      <span className={styles.quadrant} data-q={item.quadrant}>
-                        {QUADRANT_LABEL[item.quadrant]}
-                      </span>
-                    )}
-                  </span>
+              <form action={toggleBigThreeDone} className={styles.doneForm}>
+                <input type="hidden" name="date" value={isoDate(now)} />
+                <input type="hidden" name="slot" value={slot} />
+                <button
+                  type="submit"
+                  className={styles.doneBtn}
+                  data-done={item?.done ?? false}
+                  disabled={!item?.text}
+                  aria-label={item?.done ? "Mark not done" : "Mark done"}
+                >
+                  {item?.done ? "✓" : ""}
+                </button>
+              </form>
+              <form action={saveBigThree} className={styles.slotForm}>
+                <input type="hidden" name="date" value={isoDate(now)} />
+                <input type="hidden" name="slot" value={slot} />
+                <input
+                  name="text"
+                  defaultValue={item?.text ?? ""}
+                  placeholder={`Priority ${slot + 1}`}
+                  className={styles.slotInput}
+                />
+                <div className={styles.slotControls}>
+                  <select name="roleId" defaultValue={item?.roleId ?? ""}>
+                    <option value="">no role</option>
+                    {roles.map((r) => (
+                      <option key={r.id} value={r.id}>
+                        {r.icon} {r.label}
+                      </option>
+                    ))}
+                  </select>
+                  <select name="outcomeId" defaultValue={item?.outcomeId ?? ""}>
+                    <option value="">no outcome</option>
+                    {outcomes.map((o) => (
+                      <option key={o.id} value={o.id}>
+                        {o.result}
+                      </option>
+                    ))}
+                  </select>
+                  <select name="quadrant" defaultValue={item?.quadrant ?? ""}>
+                    <option value="">quadrant</option>
+                    <option value="Q1">Q1 · crisis</option>
+                    <option value="Q2">Q2 · investment</option>
+                    <option value="Q3">Q3 · interruption</option>
+                    <option value="Q4">Q4 · waste</option>
+                  </select>
+                  <button type="submit" className="btnGhost">
+                    Save
+                  </button>
                 </div>
-              ) : (
-                <span className={`sub ${styles.slotEmpty}`}>Not set</span>
-              )}
+              </form>
             </div>
           ))}
         </div>
@@ -96,11 +114,19 @@ export default async function Today() {
                   {expected !== null && <span className="sub"> / {expected}</span>}
                 </div>
                 <div className="sub">{sp.practice || "No practice set"}</div>
-                {doneToday && <div className={styles.sawToday}>✓ today</div>}
+                <form action={toggleSawSession}>
+                  <input type="hidden" name="practiceId" value={sp.id} />
+                  <button type="submit" className={styles.sawLog} data-done={doneToday}>
+                    {doneToday ? "✓ practiced today" : "Log today"}
+                  </button>
+                </form>
               </div>
             );
           })}
         </div>
+        {sawPractices.length === 0 && (
+          <div className="sub">No practices yet — set them up in the Sharpen tab.</div>
+        )}
       </section>
     </div>
   );

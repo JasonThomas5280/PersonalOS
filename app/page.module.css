@@ -13,64 +13,68 @@
 .slot {
   display: flex;
   align-items: flex-start;
-  gap: 13px;
+  gap: 12px;
   padding: 14px;
 }
 
-.slot[data-done="true"] .slotText {
+.slot[data-done="true"] .slotInput {
   text-decoration: line-through;
   color: var(--dim);
 }
 
-.slotNum {
+.doneForm {
+  padding-top: 4px;
+}
+
+.doneBtn {
   width: 24px;
   height: 24px;
   border-radius: 7px;
   border: 1px solid var(--line);
-  color: var(--gold);
-  font-size: 12px;
+  background: transparent;
+  color: var(--bg);
+  font-size: 13px;
   font-weight: 700;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  flex-shrink: 0;
 }
 
-.slotBody {
+.doneBtn[data-done="true"] {
+  background: var(--gold);
+  border-color: var(--gold);
+}
+
+.doneBtn:disabled {
+  opacity: 0.35;
+  cursor: default;
+}
+
+.slotForm {
+  flex: 1;
   display: flex;
   flex-direction: column;
-  gap: 5px;
+  gap: 8px;
 }
 
-.slotText {
+.slotInput {
   font-size: 14.5px;
-  color: var(--text);
 }
 
-.slotMeta {
+.slotControls {
   display: flex;
   flex-wrap: wrap;
-  gap: 10px;
+  gap: 7px;
 }
 
-.slotEmpty {
-  padding-top: 3px;
-}
-
-.quadrant[data-q="Q2"] {
-  color: var(--green);
-}
-.quadrant[data-q="Q1"] {
-  color: var(--red);
-}
-.quadrant[data-q="Q3"],
-.quadrant[data-q="Q4"] {
-  color: var(--yellow);
+.slotControls select {
+  width: auto;
+  flex: 1 1 120px;
+  padding: 8px;
+  font-size: 12.5px;
+  color: var(--dim);
 }
 
 .sawRow {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+  grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
   gap: 10px;
 }
 
@@ -100,7 +104,17 @@
   color: var(--heading);
 }
 
-.sawToday {
+.sawLog {
+  width: 100%;
+  padding: 7px;
   font-size: 12px;
+  border-radius: 7px;
+  border: 1px solid var(--line);
+  background: transparent;
+  color: var(--dim);
+}
+
+.sawLog[data-done="true"] {
   color: var(--green);
+  border-color: color-mix(in srgb, var(--green) 40%, transparent);
 }

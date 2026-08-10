@@ -1,120 +1,205 @@
 {
-  "_note": "SAMPLE DATA ONLY — the real prototype export was not available when this repo was scaffolded (not in the empty repo, not in the uploaded files). Overwrite this file with your real 'personal-os-v4' export and re-run `npm run seed`. Shapes below mirror the prototype's export format; see seed/README.md.",
-  "exportedAt": "2026-08-08",
+  "_note": "SAMPLE DATA ONLY - replace with your real personal-os-v4 export and re-run `npm run seed` (see seed/README.md). This file is in the canonical export shape produced by Settings -> Export (/api/export).",
+  "exportedAt": "2026-08-10",
   "mission": "Sample mission statement.",
   "capacityBudget": 12,
   "roles": [
-    { "id": "faith", "label": "Faith Leader", "icon": "✝" },
-    { "id": "father", "label": "Father", "icon": "★" },
-    { "id": "professional", "label": "Professional", "icon": "◆" }
+    {
+      "id": "faith",
+      "label": "Faith Leader",
+      "icon": "✝"
+    },
+    {
+      "id": "father",
+      "label": "Father",
+      "icon": "★"
+    },
+    {
+      "id": "professional",
+      "label": "Professional",
+      "icon": "◆"
+    }
   ],
   "roleDetail": {
-    "faith": { "mission": "Sample standing definition for the faith role." },
-    "father": { "mission": "Sample standing definition for the father role.", "success": "Observable sample success criteria." },
-    "professional": { "mission": "Sample standing definition for the professional role.", "stewardship": "Sample stewardship.", "failureMode": "Sample failure mode." }
+    "faith": {
+      "mission": "Sample standing definition for the faith role.",
+      "success": "",
+      "stewardship": "",
+      "failureMode": "",
+      "reviewCadence": null,
+      "lastReviewed": null
+    },
+    "father": {
+      "mission": "Sample standing definition for the father role.",
+      "success": "Observable sample success criteria.",
+      "stewardship": "",
+      "failureMode": "",
+      "reviewCadence": null,
+      "lastReviewed": null
+    },
+    "professional": {
+      "mission": "Sample standing definition for the professional role.",
+      "success": "",
+      "stewardship": "Sample stewardship.",
+      "failureMode": "Sample failure mode.",
+      "reviewCadence": null,
+      "lastReviewed": null
+    }
   },
   "roleHealth": {
-    "faith": "green",
-    "father": "yellow",
-    "professional": "green"
+    "faith": "GREEN",
+    "father": "YELLOW",
+    "professional": "GREEN"
   },
   "roleNotes": {
     "father": "Sample status note with recovery plan."
   },
-  "bigThree": [
-    { "text": "Sample Q2 priority.", "done": true, "role": "professional", "outcomeId": "1754870400000", "quadrant": "Q2" },
-    { "text": "Sample Q1 crisis handled.", "done": true, "role": "father", "outcomeId": "", "quadrant": "Q1" },
-    { "text": "", "done": false, "role": "", "outcomeId": "", "quadrant": "" }
-  ],
   "outcomes": [
     {
       "id": "1754870400000",
       "result": "Sample outcome one is delivered.",
       "purpose": "Sample emotional why.",
       "actions": "Sample action step 1\nSample action step 2",
+      "phase": "BUILDING",
       "role": "professional",
-      "roles": ["professional", "father"],
-      "phase": "building",
+      "roles": [
+        "professional",
+        "father"
+      ],
       "baselineDate": "2026-06-01",
       "targetDate": "2026-09-15",
-      "actualDate": "",
+      "actualDate": null,
       "leadTimeDays": 30,
       "weeklyHours": 4,
-      "dependsOn": [],
-      "gate": [
-        { "text": "Sample gate checklist item A", "met": true },
-        { "text": "Sample gate checklist item B", "met": false }
-      ],
+      "criticalPath": true,
       "successCriteria": "Sample delivery criteria.",
       "killCriteria": "Sample stop condition.",
       "exitCriteria": "",
-      "criticalPath": true
+      "gate": [
+        {
+          "text": "Sample gate checklist item A",
+          "met": true
+        },
+        {
+          "text": "Sample gate checklist item B",
+          "met": false
+        }
+      ],
+      "dependsOn": []
     },
     {
       "id": "1754956800000",
       "result": "Sample outcome two is deployed.",
       "purpose": "",
       "actions": "",
+      "phase": "EXPLORING",
       "role": "faith",
-      "roles": ["faith"],
-      "phase": "prekickoff",
+      "roles": [
+        "faith"
+      ],
       "baselineDate": "2026-07-01",
       "targetDate": "2026-08-20",
-      "actualDate": "",
-      "leadTimeDays": "",
+      "actualDate": null,
+      "leadTimeDays": null,
       "weeklyHours": 2.5,
-      "dependsOn": ["1754870400000"],
-      "gate": [],
+      "criticalPath": false,
       "successCriteria": "",
       "killCriteria": "",
       "exitCriteria": "Sample hypercare exit criteria.",
-      "criticalPath": false
+      "gate": [],
+      "dependsOn": [
+        "1754870400000"
+      ]
     }
   ],
   "raid": [
     {
       "id": "raid1",
-      "type": "risk",
+      "type": "RISK",
       "description": "Sample risk description.",
-      "status": "open",
+      "impact": "",
+      "status": "OPEN",
       "owner": "Me",
+      "due": null,
       "trigger": "Sample trigger condition.",
       "severity": "S2",
-      "probability": "high",
+      "probability": "HIGH",
+      "classification": null,
+      "escalation": "",
+      "alternatives": "",
+      "decidedBy": "",
+      "decidedOn": null,
+      "resolution": "",
+      "closedOn": null,
       "role": "professional",
-      "outcome": "1754870400000"
+      "outcome": "1754870400000",
+      "person": null
     },
     {
       "id": "raid2",
-      "type": "action",
+      "type": "ACTION",
       "description": "Sample action item.",
-      "status": "in-progress",
+      "impact": "",
+      "status": "IN_PROGRESS",
       "owner": "Me",
       "due": "2026-08-14",
-      "role": "father"
+      "trigger": "",
+      "severity": null,
+      "probability": null,
+      "classification": null,
+      "escalation": "",
+      "alternatives": "",
+      "decidedBy": "",
+      "decidedOn": null,
+      "resolution": "",
+      "closedOn": null,
+      "role": "father",
+      "outcome": null,
+      "person": null
     },
     {
       "id": "raid3",
-      "type": "issue",
+      "type": "ISSUE",
       "description": "Sample issue description.",
-      "status": "blocked",
+      "impact": "",
+      "status": "BLOCKED",
+      "owner": "Me",
+      "due": null,
+      "trigger": "",
       "severity": "S3",
-      "classification": "depends-on-others",
+      "probability": null,
+      "classification": "DEPENDS_ON_OTHERS",
       "escalation": "Sample escalation path.",
+      "alternatives": "",
+      "decidedBy": "",
+      "decidedOn": null,
+      "resolution": "",
+      "closedOn": null,
+      "role": null,
       "outcome": "1754956800000",
       "person": "p1"
     },
     {
       "id": "raid4",
-      "type": "decision",
+      "type": "DECISION",
       "description": "Sample decision made.",
       "impact": "Sample reasoning for the decision.",
-      "status": "closed",
+      "status": "CLOSED",
+      "owner": "Me",
+      "due": null,
+      "trigger": "",
+      "severity": null,
+      "probability": null,
+      "classification": null,
+      "escalation": "",
       "alternatives": "Sample rejected alternative and why it lost.",
       "decidedBy": "Me",
       "decidedOn": "2026-07-20",
       "resolution": "Decided; see reasoning.",
-      "closedOn": "2026-07-20"
+      "closedOn": "2026-07-20",
+      "role": null,
+      "outcome": null,
+      "person": null
     }
   ],
   "people": [
@@ -124,86 +209,159 @@
       "title": "Sample Title",
       "employer": "Sample Employer",
       "familyContext": "Sample family context.",
-      "ring": "inner",
-      "stage": "maintain",
+      "ring": "INNER",
+      "stage": "MAINTAIN",
       "origin": "Sample origin story.",
       "firstContact": "2024-03-10",
       "lastContact": "2026-07-28",
       "cadenceDays": null,
       "engines": {
-        "primary": "connection",
-        "secondary": "ideology",
-        "rejected": "ego",
-        "confidence": "medium"
+        "primary": "CONNECTION",
+        "secondary": "IDEOLOGY",
+        "rejected": "EGO",
+        "confidence": "MEDIUM"
       },
       "archetype": "Sample archetype",
-      "nodeType": "super-connector",
-      "situation": ["Sample live fact 1", "Sample live fact 2"],
-      "material": ["Sample conversational thread"],
-      "roles": ["professional"],
-      "outcomes": ["1754870400000"],
+      "nodeType": "SUPER_CONNECTOR",
+      "situation": "Sample live fact 1\nSample live fact 2",
+      "material": "Sample conversational thread",
+      "roles": [
+        "professional"
+      ],
+      "outcomes": [
+        "1754870400000"
+      ],
       "given": [
-        { "date": "2026-07-01", "category": "informational", "text": "Sample contribution given." },
-        { "date": "2026-07-20", "category": "time", "text": "Sample time contribution." }
+        {
+          "date": "2026-07-01",
+          "category": "INFORMATIONAL",
+          "text": "Sample contribution given."
+        },
+        {
+          "date": "2026-07-20",
+          "category": "TIME",
+          "text": "Sample time contribution."
+        }
       ],
       "owed": [
-        { "text": "Sample commitment owed.", "due": "2026-08-22", "done": false, "completedOn": null }
+        {
+          "text": "Sample commitment owed.",
+          "due": "2026-08-22",
+          "done": false,
+          "completedOn": null
+        }
       ],
-      "potential": ["Sample potential contribution."]
+      "potential": [
+        "Sample potential contribution."
+      ]
     },
     {
       "id": "p2",
       "name": "Sample Person Two",
-      "ring": "working",
-      "stage": "develop",
+      "title": "",
+      "employer": "",
+      "familyContext": "",
+      "ring": "WORKING",
+      "stage": "DEVELOP",
+      "origin": "",
+      "firstContact": null,
       "lastContact": "2026-06-15",
-      "engines": { "primary": "money", "confidence": "low" },
-      "roles": ["faith", "father"],
+      "cadenceDays": null,
+      "engines": {
+        "primary": "MONEY",
+        "secondary": null,
+        "rejected": null,
+        "confidence": "LOW"
+      },
+      "archetype": "",
+      "nodeType": null,
+      "situation": "",
+      "material": "",
+      "roles": [
+        "faith",
+        "father"
+      ],
       "outcomes": [],
       "given": [],
       "owed": [],
       "potential": []
     }
   ],
+  "bigThree": [
+    {
+      "date": "2026-08-08",
+      "slot": 0,
+      "text": "Sample Q2 priority.",
+      "done": true,
+      "quadrant": "Q2",
+      "role": "professional",
+      "outcomeId": "1754870400000"
+    },
+    {
+      "date": "2026-08-08",
+      "slot": 1,
+      "text": "Sample Q1 crisis handled.",
+      "done": true,
+      "quadrant": "Q1",
+      "role": "father",
+      "outcomeId": ""
+    }
+  ],
   "saw": {
     "physical": {
       "practice": "Sample physical practice.",
       "minimumViable": "Sample bad-week floor.",
-      "cadence": "5x",
+      "cadence": "FIVE_X_WEEK",
       "sessionMinutes": 40,
       "mvMinutes": 10,
       "depletes": "Sample depletion trigger.",
-      "health": "yellow",
+      "health": "YELLOW",
       "note": "",
       "role": "father",
-      "history": ["2026-08-03", "2026-08-05", "2026-08-07"]
+      "history": [
+        "2026-08-03",
+        "2026-08-05",
+        "2026-08-07"
+      ]
     },
     "mental": {
       "practice": "Sample mental practice.",
       "minimumViable": "Sample floor.",
-      "cadence": "daily",
+      "cadence": "DAILY",
       "sessionMinutes": 20,
       "mvMinutes": 5,
-      "health": "green",
+      "depletes": "",
+      "health": "GREEN",
+      "note": "",
       "role": "professional",
-      "history": ["2026-08-06", "2026-08-07", "2026-08-08"]
+      "history": [
+        "2026-08-06",
+        "2026-08-07",
+        "2026-08-08"
+      ]
     },
     "spiritual": {
       "practice": "Sample spiritual practice.",
-      "cadence": "daily",
+      "minimumViable": "",
+      "cadence": "DAILY",
       "sessionMinutes": 15,
       "mvMinutes": 5,
-      "health": "green",
+      "depletes": "",
+      "health": "GREEN",
+      "note": "",
       "role": "faith",
-      "history": ["2026-08-08"]
+      "history": [
+        "2026-08-08"
+      ]
     },
     "social": {
       "practice": "Sample social practice.",
       "minimumViable": "",
-      "cadence": "3x",
+      "cadence": "THREE_X_WEEK",
       "sessionMinutes": 90,
       "mvMinutes": 30,
-      "health": "red",
+      "depletes": "",
+      "health": "RED",
       "note": "Sample note.",
       "role": null,
       "history": []
@@ -219,7 +377,7 @@
       "blocked": "",
       "nextWeek": "Sample big rocks by role.",
       "gratitude": "Sample gratitude.",
-      "health": "green",
+      "health": "GREEN",
       "healthNote": ""
     }
   },
@@ -232,8 +390,18 @@
       "didnt": "Sample didn't-go-well.",
       "rootCauses": "Sample root causes.",
       "changes": [
-        { "change": "Sample process mechanism.", "why": "Sample why.", "target": "2026-08-01", "done": false },
-        { "change": "Second sample mechanism.", "why": "", "target": null, "done": true }
+        {
+          "change": "Sample process mechanism.",
+          "why": "Sample why.",
+          "target": "2026-08-01",
+          "done": false
+        },
+        {
+          "change": "Second sample mechanism.",
+          "why": "",
+          "target": null,
+          "done": true
+        }
       ]
     }
   ]

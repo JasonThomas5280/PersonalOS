@@ -1,0 +1,177 @@
+/* Shared layout vocabulary for the tab pages. */
+
+.stack {
+  display: flex;
+  flex-direction: column;
+  gap: 22px;
+}
+
+.item {
+  padding: 0;
+  overflow: hidden;
+}
+
+.item > summary {
+  list-style: none;
+  cursor: pointer;
+  padding: 14px 16px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.item > summary::-webkit-details-marker {
+  display: none;
+}
+
+.item[open] > summary {
+  border-bottom: 1px solid var(--line);
+}
+
+.title {
+  font-size: 14.5px;
+  font-weight: 600;
+  color: var(--text);
+  flex: 1 1 200px;
+}
+
+.meta {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+  font-size: 12px;
+  color: var(--dim);
+}
+
+.chip {
+  padding: 3px 9px;
+  font-size: 11.5px;
+  border-radius: 20px;
+  border: 1px solid var(--line);
+  color: var(--dim);
+  white-space: nowrap;
+}
+
+.chipGold {
+  composes: chip;
+  color: var(--gold);
+  border-color: color-mix(in srgb, var(--gold) 45%, transparent);
+}
+
+.chipRed {
+  composes: chip;
+  color: var(--red);
+  border-color: color-mix(in srgb, var(--red) 45%, transparent);
+}
+
+.body {
+  padding: 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.formGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  gap: 12px;
+}
+
+.full {
+  grid-column: 1 / -1;
+}
+
+.actionsRow {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+  flex-wrap: wrap;
+}
+
+.checks {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px 14px;
+}
+
+.checks label {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 13px;
+  color: var(--body);
+}
+
+.checks input[type="checkbox"] {
+  width: auto;
+}
+
+.listRow {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  font-size: 13px;
+  color: var(--body);
+}
+
+.listRow form {
+  display: contents;
+}
+
+.tinyBtn {
+  padding: 4px 10px;
+  font-size: 11.5px;
+  border-radius: 6px;
+  border: 1px solid var(--line);
+  background: transparent;
+  color: var(--dim);
+}
+
+.dangerBtn {
+  composes: tinyBtn;
+  color: var(--red);
+  border-color: color-mix(in srgb, var(--red) 40%, transparent);
+}
+
+.addForm {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.addForm input,
+.addForm select {
+  width: auto;
+  flex: 1 1 160px;
+}
+
+.createCard {
+  padding: 16px;
+  border: 1px dashed var(--line);
+  border-radius: 10px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.sectionLabel {
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--gold);
+}
+
+.filterRow {
+  display: flex;
+  gap: 7px;
+  flex-wrap: wrap;
+}
+
+.groupHead {
+  font-size: 12px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--faint);
+  margin-bottom: 8px;
+}
