@@ -63,22 +63,22 @@ export async function RenewalStep() {
             const p = byDim.get(d.key);
             return (
               <section key={d.key} className={shared.createCard}>
-                <span className={shared.sectionLabel}>
+                <h2 className={shared.sectionLabel}>
                   {d.label} — {d.desc}
-                </span>
+                </h2>
                 <div className={shared.formGrid}>
                   <div className={shared.full}>
-                    <span className="label">The practice — leave blank to skip this one</span>
+                    <label className="label">The practice — leave blank to skip this one
                     <input
                       name={`practice-${d.key}`}
                       data-dim={d.key}
                       data-role="practice"
                       defaultValue={p?.practice ?? ""}
                       placeholder={d.ex}
-                    />
+                    /></label>
                   </div>
                   <div>
-                    <span className="label">How often</span>
+                    <label className="label">How often
                     <select
                       name={`cadence-${d.key}`}
                       data-dim={d.key}
@@ -90,10 +90,10 @@ export async function RenewalStep() {
                           {c.label}
                         </option>
                       ))}
-                    </select>
+                    </select></label>
                   </div>
                   <div>
-                    <span className="label">Minutes / session</span>
+                    <label className="label">Minutes / session
                     <input
                       type="number"
                       step="5"
@@ -102,34 +102,34 @@ export async function RenewalStep() {
                       data-dim={d.key}
                       data-role="minutes"
                       defaultValue={p?.sessionMinutes ?? d.defMin}
-                    />
+                    /></label>
                   </div>
                   <div className={shared.full}>
-                    <span className="label">
+                    <label className="label">
                       Minimum viable version — the bad-week floor
-                    </span>
+                    
                     <input
                       name={`floor-${d.key}`}
                       defaultValue={p?.minimumViable ?? ""}
                       placeholder={d.mv}
-                    />
+                    /></label>
                     <p className="sub">
                       The most important field here. A streak that survives a bad week is worth more
                       than a perfect one that breaks.
                     </p>
                   </div>
                   <div>
-                    <span className="label">Floor minutes</span>
+                    <label className="label">Floor minutes
                     <input
                       type="number"
                       step="5"
                       min="0"
                       name={`floorMinutes-${d.key}`}
                       defaultValue={p?.mvMinutes ?? Math.max(5, Math.round(d.defMin / 3))}
-                    />
+                    /></label>
                   </div>
                   <div>
-                    <span className="label">Linked role</span>
+                    <label className="label">Linked role
                     <select name={`role-${d.key}`} defaultValue={""}>
                       <option value="">none</option>
                       {roles.map((r) => (
@@ -137,15 +137,15 @@ export async function RenewalStep() {
                           {r.icon} {r.label}
                         </option>
                       ))}
-                    </select>
+                    </select></label>
                   </div>
                   <div className={shared.full}>
-                    <span className="label">Depletion triggers — what tells you it&apos;s slipping</span>
+                    <label className="label">Depletion triggers — what tells you it&apos;s slipping
                     <input
                       name={`depletes-${d.key}`}
                       defaultValue={p?.depletes ?? ""}
                       placeholder="Short temper, skipping meals, checking the phone in bed"
-                    />
+                    /></label>
                   </div>
                 </div>
               </section>

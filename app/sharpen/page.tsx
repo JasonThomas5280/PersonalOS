@@ -1,3 +1,4 @@
+import { SubmitButton } from "@/components/SubmitButton";
 import { toggleSawSession, updateSawPractice } from "@/app/actions";
 import { CADENCE_PER_28D } from "@/lib/alerts";
 import { daysSince, isoDate, todayUTC } from "@/lib/dates";
@@ -15,7 +16,8 @@ const DIMS: Array<{ key: SawDimension; label: string; desc: string }> = [
 ];
 const CADENCES = ["DAILY", "FIVE_X_WEEK", "THREE_X_WEEK", "WEEKLY", "BIWEEKLY"] as const;
 
-export default async function SharpenPage() {
+export default async function SharpenPage({ searchParams }: PageProps<"/sharpen">) {
+  const openId = typeof (await searchParams).open === "string" ? ((await searchParams).open as string) : undefined;
   const now = todayUTC();
   const [practices, roles] = await Promise.all([
     prisma.sawPractice.findMany({ include: { sessions: { orderBy: { date: "desc" } } } }),
@@ -44,7 +46,7 @@ export default async function SharpenPage() {
         const expected = p?.cadence ? CADENCE_PER_28D[p.cadence] : null;
         const doneToday = p?.sessions.some((x) => isoDate(x.date) === isoDate(now)) ?? false;
         return (
-          <details key={dim.key} className={`card ${shared.item}`}>
+          <details key={dim.key} id={p?.id} open={Boolean(p?.id) && p?.id === openId} className={`card ${shared.item}`}>
             <summary>
               <span className={shared.title}>{dim.label}</span>
               <span className={shared.meta}>
@@ -71,15 +73,15 @@ export default async function SharpenPage() {
               <form action={updateSawPractice} className={shared.formGrid}>
                 <input type="hidden" name="dimension" value={dim.key} />
                 <div className={shared.full}>
-                  <span className="label">The practice</span>
-                  <input name="practice" defaultValue={p?.practice ?? ""} />
+                  <label className="label">The practice
+                  <input name="practice" defaultValue={p?.practice ?? ""} /></label>
                 </div>
                 <div className={shared.full}>
-                  <span className="label">Minimum viable version — the bad-week floor</span>
-                  <input name="minimumViable" defaultValue={p?.minimumViable ?? ""} />
+                  <label className="label">Minimum viable version — the bad-week floor
+                  <input name="minimumViable" defaultValue={p?.minimumViable ?? ""} /></label>
                 </div>
                 <div>
-                  <span className="label">Cadence</span>
+                  <label className="label">Cadence
                   <select name="cadence" defaultValue={p?.cadence ?? ""}>
                     <option value="">not set</option>
                     {CADENCES.map((c) => (
@@ -87,27 +89,27 @@ export default async function SharpenPage() {
                         {c === "FIVE_X_WEEK" ? "5× / week" : c === "THREE_X_WEEK" ? "3× / week" : c.toLowerCase()}
                       </option>
                     ))}
-                  </select>
+                  </select></label>
                 </div>
                 <div>
-                  <span className="label">Minutes / session</span>
-                  <input type="number" name="sessionMinutes" defaultValue={p?.sessionMinutes ?? ""} />
+                  <label className="label">Minutes / session
+                  <input type="number" name="sessionMinutes" defaultValue={p?.sessionMinutes ?? ""} /></label>
                 </div>
                 <div>
-                  <span className="label">Floor minutes</span>
-                  <input type="number" name="mvMinutes" defaultValue={p?.mvMinutes ?? ""} />
+                  <label className="label">Floor minutes
+                  <input type="number" name="mvMinutes" defaultValue={p?.mvMinutes ?? ""} /></label>
                 </div>
                 <div>
-                  <span className="label">Health</span>
+                  <label className="label">Health
                   <select name="health" defaultValue={p?.health ?? ""}>
                     <option value="">not set</option>
                     <option value="GREEN">green</option>
                     <option value="YELLOW">yellow</option>
                     <option value="RED">red</option>
-                  </select>
+                  </select></label>
                 </div>
                 <div>
-                  <span className="label">Linked role</span>
+                  <label className="label">Linked role
                   <select name="roleId" defaultValue={p?.roleId ?? ""}>
                     <option value="">none</option>
                     {roles.map((r) => (
@@ -115,25 +117,23 @@ export default async function SharpenPage() {
                         {r.icon} {r.label}
                       </option>
                     ))}
-                  </select>
+                  </select></label>
                 </div>
                 <div className={shared.full}>
-                  <span className="label">Depletion triggers — early warnings</span>
-                  <textarea name="depletes" defaultValue={p?.depletes ?? ""} rows={2} />
+                  <label className="label">Depletion triggers — early warnings
+                  <textarea name="depletes" defaultValue={p?.depletes ?? ""} rows={2} /></label>
                 </div>
                 <div className={shared.full}>
-                  <span className="label">Note</span>
-                  <textarea name="note" defaultValue={p?.note ?? ""} rows={2} />
+                  <label className="label">Note
+                  <textarea name="note" defaultValue={p?.note ?? ""} rows={2} /></label>
                 </div>
                 <div className={`${shared.full} ${shared.actionsRow}`}>
-                  <button type="submit" className="btn">
-                    Save
-                  </button>
+                  <SubmitButton>Save</SubmitButton>
                 </div>
               </form>
               {p && p.sessions.length > 0 && (
                 <div>
-                  <span className={shared.sectionLabel}>Recent sessions</span>
+                  <h2 className={shared.sectionLabel}>Recent sessions</h2>
                   <div className="sub">
                     {p.sessions.slice(0, 14).map((x) => isoDate(x.date)).join(" · ")}
                   </div>

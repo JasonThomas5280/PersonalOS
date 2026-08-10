@@ -23,7 +23,13 @@ export function NavTabs() {
       {TABS.map((t) => {
         const active = t.href === "/" ? pathname === "/" : pathname.startsWith(t.href);
         return (
-          <Link key={t.href} href={t.href} className={active ? styles.active : styles.tab}>
+          <Link
+            key={t.href}
+            href={t.href}
+            className={active ? styles.active : styles.tab}
+            // Gold text alone doesn't tell a screen reader which tab is current.
+            aria-current={active ? "page" : undefined}
+          >
             {t.label}
           </Link>
         );

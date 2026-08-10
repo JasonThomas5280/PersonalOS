@@ -65,7 +65,7 @@ export function RenewalLedger({
       {children}
 
       <section className={shared.createCard}>
-        <span className={shared.sectionLabel}>Your week, so far</span>
+        <h2 className={shared.sectionLabel}>Your week, so far</h2>
         {slack === null ? (
           <p className="sub">
             Fill in the capacity worksheet and this becomes a real number — right now there&apos;s

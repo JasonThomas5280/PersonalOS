@@ -335,3 +335,43 @@ export function computeAlerts(s: AlertsSnapshot): Alert[] {
   const order: Record<AlertSeverity, number> = { critical: 0, warning: 1, info: 2 };
   return alerts.sort((a, b) => order[a.severity] - order[b.severity]);
 }
+
+/**
+ * Where an alert points.
+ *
+ * computeAlerts already resolves the entity behind every alert, but the panel
+ * discarded those IDs — so "Broken commitment to Sarah" was a dead string you
+ * had to go hunt down by hand. `open` expands that record's accordion
+ * server-side; the fragment scrolls to it. Returns null for alerts with no
+ * single destination (you are already on Today for a zero-Q2 day).
+ */
+export function alertHref(a: Alert): string | null {
+  const to = (path: string, id?: string) => (id ? `${path}?open=${id}#${id}` : path);
+
+  switch (a.type) {
+    case "target-overdue":
+    case "lead-time-breach":
+    case "slip":
+      return to("/outcomes", a.outcomeId);
+    case "capacity-over-budget":
+    case "heavy-phase-collision":
+    case "critical-path-collision":
+      return "/outcomes";
+    case "broken-commitment":
+    case "contact-overdue":
+    case "ethics-extraction-drift":
+    case "ledger-quiet":
+      return to("/people", a.personId);
+    case "risk-exposure":
+    case "raid-blocked":
+      return to("/raid", a.raidId);
+    case "saw-below-cadence":
+      return to("/sharpen", a.sawPracticeId);
+    case "role-review-overdue":
+      return to("/roles", a.roleId);
+    case "stale-weekly-review":
+      return "/review";
+    case "zero-q2-day":
+      return null;
+  }
+}

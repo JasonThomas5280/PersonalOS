@@ -102,7 +102,7 @@ export async function DoneStep() {
       </section>
 
       <section className={shared.createCard}>
-        <span className={shared.sectionLabel}>Where every answer lives from here</span>
+        <h2 className={shared.sectionLabel}>Where every answer lives from here</h2>
         <p className="sub">
           <strong>Mission and capacity budget</strong> → Settings
           <br />
@@ -125,7 +125,7 @@ export async function DoneStep() {
       </section>
 
       <section className={shared.createCard}>
-        <span className={shared.sectionLabel}>Your first three moves</span>
+        <h2 className={shared.sectionLabel}>Your first three moves</h2>
         <p className="sub">
           <strong>Tomorrow</strong> — set your Big 3 and tag each quadrant. Notice how many are Q2.
           <br />

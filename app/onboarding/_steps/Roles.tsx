@@ -31,7 +31,7 @@ export async function RolesStep() {
       }
     >
       <section className={shared.createCard}>
-        <span className={shared.sectionLabel}>What goes in the mission line</span>
+        <h2 className={shared.sectionLabel}>What goes in the mission line</h2>
         <p className="sub">
           A standing definition, not a goal. Goals finish; a role mission is still true in ten years.
           Write the kind of person you&apos;re trying to be in that role, in one sentence, in your
@@ -118,7 +118,7 @@ export async function RolesStep() {
 
       {custom.length > 0 && (
         <section className={shared.createCard}>
-          <span className={shared.sectionLabel}>Custom roles you added</span>
+          <h2 className={shared.sectionLabel}>Custom roles you added</h2>
           <div className={styles.added}>
             {custom.map((c) => (
               <div key={c.id} className={styles.addedRow}>

@@ -1,3 +1,4 @@
+import { SubmitButton } from "@/components/SubmitButton";
 import { prisma } from "@/lib/prisma";
 import { isoDate } from "@/lib/dates";
 import { createRaidItem } from "@/app/actions";
@@ -44,7 +45,7 @@ export async function RaidStep() {
     >
       {items.length > 0 && (
         <section className={shared.createCard}>
-          <span className={shared.sectionLabel}>In the log ({items.length})</span>
+          <h2 className={shared.sectionLabel}>In the log ({items.length})</h2>
           <div className={styles.added}>
             {items.map((r) => (
               <div key={r.id} className={styles.addedRow}>
@@ -62,9 +63,7 @@ export async function RaidStep() {
                 </span>
                 <form action={removeRaidItem}>
                   <input type="hidden" name="id" value={r.id} />
-                  <button type="submit" className={shared.tinyBtn}>
-                    remove
-                  </button>
+                  <SubmitButton className={shared.tinyBtn} pendingLabel="…">remove</SubmitButton>
                 </form>
               </div>
             ))}
@@ -86,9 +85,7 @@ export async function RaidStep() {
           pull out the decisions, actions and risks for you.
         </Later>
         <div className={shared.actionsRow}>
-          <button type="submit" className="btn">
-            Next — people
-          </button>
+          <SubmitButton>Next — people</SubmitButton>
         </div>
       </form>
     </Shell>

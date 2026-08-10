@@ -60,13 +60,13 @@ export function MissionDrafter({ initial }: { initial: string }) {
       <section className={shared.createCard}>
         {SEED_QUESTIONS.map((q) => (
           <div key={q.key} style={{ marginBottom: 14 }}>
-            <span className="label">{q.label}</span>
+            <label className="label">{q.label}
             <textarea
               rows={2}
               placeholder={q.hint}
               value={seed[q.key]}
               onChange={(e) => setSeed({ ...seed, [q.key]: e.target.value })}
-            />
+            /></label>
           </div>
         ))}
         <button
@@ -86,7 +86,7 @@ export function MissionDrafter({ initial }: { initial: string }) {
       </section>
 
       <section className={shared.createCard}>
-        <span className="label">Your mission — edit freely, this is yours</span>
+        <label className="label">Your mission — edit freely, this is yours
         <textarea
           name="mission"
           rows={4}
@@ -94,7 +94,7 @@ export function MissionDrafter({ initial }: { initial: string }) {
           onChange={(e) => setMission(e.target.value)}
           placeholder="Write it yourself, or use the draft button and rewrite what doesn't sound like you."
           style={{ color: "var(--gold)", fontStyle: mission ? "italic" : "normal" }}
-        />
+        /></label>
       </section>
     </>
   );

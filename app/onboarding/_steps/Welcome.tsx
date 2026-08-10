@@ -36,7 +36,7 @@ export async function WelcomeStep() {
       }
     >
       <section className={shared.createCard}>
-        <span className={shared.sectionLabel}>Three honest things before you start</span>
+        <h2 className={shared.sectionLabel}>Three honest things before you start</h2>
         <p className="sub">
           <strong>This will show you things you&apos;d rather not see.</strong> The capacity math in
           particular tends to reveal that the plan doesn&apos;t fit. That&apos;s the feature — a

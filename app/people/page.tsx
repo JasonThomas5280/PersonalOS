@@ -1,3 +1,5 @@
+import { ConfirmButton } from "@/components/ConfirmButton";
+import { IconSubmit, SubmitButton } from "@/components/SubmitButton";
 import {
   addCommitment,
   addContribution,
@@ -33,7 +35,8 @@ const CATEGORIES = [
   "PRESENCE",
 ] as const;
 
-export default async function PeoplePage() {
+export default async function PeoplePage({ searchParams }: PageProps<"/people">) {
+  const openId = typeof (await searchParams).open === "string" ? ((await searchParams).open as string) : undefined;
   const now = todayUTC();
   const [people, roles, outcomes] = await Promise.all([
     prisma.person.findMany({
@@ -75,9 +78,9 @@ export default async function PeoplePage() {
         const inRing = people.filter((p) => p.ring === ring.key);
         return (
           <section key={ring.key}>
-            <div className={shared.groupHead}>
+            <h2 className={shared.groupHead}>
               {ring.label} · {ring.hint} · {inRing.length} people
-            </div>
+            </h2>
             {inRing.length === 0 && <div className="sub">Nobody here yet.</div>}
             {inRing.map((p) => {
               const cadence = p.cadenceDays ?? RING_CADENCE_DAYS[p.ring];
@@ -87,7 +90,7 @@ export default async function PeoplePage() {
                 (c) => !c.done && c.due && daysSince(c.due, now) > 0
               ).length;
               return (
-                <details key={p.id} className={`card ${shared.item}`} style={{ marginBottom: 9 }}>
+                <details key={p.id} id={p.id} open={p.id === openId} className={`card ${shared.item}`} style={{ marginBottom: 9 }}>
                   <summary>
                     <span className={shared.title}>{p.name}</span>
                     <span className={shared.meta}>
@@ -111,120 +114,121 @@ export default async function PeoplePage() {
                     <div className={shared.actionsRow}>
                       <form action={logContact}>
                         <input type="hidden" name="id" value={p.id} />
-                        <button type="submit" className="btnGhost">
-                          Log contact today
-                        </button>
+                        <SubmitButton className="btnGhost">Log contact today</SubmitButton>
                       </form>
                     </div>
 
                     <form action={updatePerson} className={shared.formGrid}>
                       <input type="hidden" name="id" value={p.id} />
                       <div>
-                        <span className="label">Name</span>
-                        <input name="name" defaultValue={p.name} required />
+                        <label className="label">Name
+                        <input name="name" defaultValue={p.name} required /></label>
                       </div>
                       <div>
-                        <span className="label">Title</span>
-                        <input name="title" defaultValue={p.title} />
+                        <label className="label">Title
+                        <input name="title" defaultValue={p.title} /></label>
                       </div>
                       <div>
-                        <span className="label">Employer</span>
-                        <input name="employer" defaultValue={p.employer} />
+                        <label className="label">Employer
+                        <input name="employer" defaultValue={p.employer} /></label>
                       </div>
                       <div>
-                        <span className="label">Ring</span>
+                        <label className="label">Ring
                         <select name="ring" defaultValue={p.ring}>
                           {RINGS.map((r) => (
                             <option key={r.key} value={r.key}>
                               {r.key.toLowerCase()}
                             </option>
                           ))}
-                        </select>
+                        </select></label>
                       </div>
                       <div>
-                        <span className="label">Stage</span>
+                        <label className="label">Stage
                         <select name="stage" defaultValue={p.stage}>
                           {STAGES.map((s) => (
                             <option key={s} value={s}>
                               {s.toLowerCase()}
                             </option>
                           ))}
-                        </select>
+                        </select></label>
                       </div>
                       <div>
-                        <span className="label">Node type</span>
+                        <label className="label">Node type
                         <select name="nodeType" defaultValue={p.nodeType ?? ""}>
                           <option value="">none</option>
                           <option value="SUPER_CONNECTOR">super-connector</option>
                           <option value="GATEKEEPER">gatekeeper</option>
                           <option value="HUB">hub</option>
-                        </select>
+                        </select></label>
                       </div>
                       <div>
-                        <span className="label">First contact</span>
-                        <input type="date" name="firstContact" defaultValue={p.firstContact ? isoDate(p.firstContact) : ""} />
+                        <label className="label">First contact
+                        <input type="date" name="firstContact" defaultValue={p.firstContact ? isoDate(p.firstContact) : ""} /></label>
                       </div>
                       <div>
-                        <span className="label">Last contact</span>
-                        <input type="date" name="lastContact" defaultValue={p.lastContact ? isoDate(p.lastContact) : ""} />
+                        <label className="label">Last contact
+                        <input type="date" name="lastContact" defaultValue={p.lastContact ? isoDate(p.lastContact) : ""} /></label>
                       </div>
                       <div>
-                        <span className="label">Cadence override (days)</span>
-                        <input type="number" name="cadenceDays" defaultValue={p.cadenceDays ?? ""} placeholder={`ring default ${RING_CADENCE_DAYS[p.ring]}`} />
+                        <label className="label">Cadence override (days)
+                        <input type="number" name="cadenceDays" defaultValue={p.cadenceDays ?? ""} placeholder={`ring default ${RING_CADENCE_DAYS[p.ring]}`} /></label>
                       </div>
                       <div>
-                        <span className="label">Primary engine</span>
-                        {engineSelect("primaryEngine", p.primaryEngine)}
+                        <label className="label">
+                          Primary engine{engineSelect("primaryEngine", p.primaryEngine)}
+                        </label>
                       </div>
                       <div>
-                        <span className="label">Secondary engine</span>
-                        {engineSelect("secondaryEngine", p.secondaryEngine)}
+                        <label className="label">
+                          Secondary engine{engineSelect("secondaryEngine", p.secondaryEngine)}
+                        </label>
                       </div>
                       <div>
-                        <span className="label">Rejected engine</span>
-                        {engineSelect("rejectedEngine", p.rejectedEngine)}
+                        <label className="label">
+                          Rejected engine{engineSelect("rejectedEngine", p.rejectedEngine)}
+                        </label>
                       </div>
                       <div>
-                        <span className="label">Engine confidence</span>
+                        <label className="label">Engine confidence
                         <select name="engineConfidence" defaultValue={p.engineConfidence}>
                           <option value="LOW">low</option>
                           <option value="MEDIUM">medium</option>
                           <option value="HIGH">high</option>
-                        </select>
+                        </select></label>
                       </div>
                       <div>
-                        <span className="label">Archetype</span>
-                        <input name="archetype" defaultValue={p.archetype} />
+                        <label className="label">Archetype
+                        <input name="archetype" defaultValue={p.archetype} /></label>
                       </div>
                       <div>
-                        <span className="label">Origin — how you met</span>
-                        <input name="origin" defaultValue={p.origin} />
+                        <label className="label">Origin — how you met
+                        <input name="origin" defaultValue={p.origin} /></label>
                       </div>
                       <div className={shared.full}>
-                        <span className="label">Family context</span>
-                        <input name="familyContext" defaultValue={p.familyContext} />
+                        <label className="label">Family context
+                        <input name="familyContext" defaultValue={p.familyContext} /></label>
                       </div>
                       <div className={shared.full}>
-                        <span className="label">Situation — 3–5 live facts, one per line</span>
-                        <textarea name="situation" defaultValue={p.situation} rows={3} />
+                        <label className="label">Situation — 3–5 live facts, one per line
+                        <textarea name="situation" defaultValue={p.situation} rows={3} /></label>
                       </div>
                       <div className={shared.full}>
-                        <span className="label">Material — conversational threads</span>
-                        <textarea name="material" defaultValue={p.material} rows={3} />
+                        <label className="label">Material — conversational threads
+                        <textarea name="material" defaultValue={p.material} rows={3} /></label>
                       </div>
-                      <div className={shared.full}>
-                        <span className="label">Linked roles</span>
+                      <fieldset className={shared.full}>
+                        <legend className="label">Linked roles</legend>
                         <div className={shared.checks}>
                           {roles.map((r) => (
                             <label key={r.id}>
                               <input type="checkbox" name="roleIds" value={r.id} defaultChecked={p.roles.some((x) => x.roleId === r.id)} />
-                              {r.icon} {r.label}
+                              <span aria-hidden="true">{r.icon}</span> {r.label}
                             </label>
                           ))}
                         </div>
-                      </div>
-                      <div className={shared.full}>
-                        <span className="label">Linked outcomes</span>
+                      </fieldset>
+                      <fieldset className={shared.full}>
+                        <legend className="label">Linked outcomes</legend>
                         <div className={shared.checks}>
                           {outcomes.map((o) => (
                             <label key={o.id}>
@@ -233,16 +237,14 @@ export default async function PeoplePage() {
                             </label>
                           ))}
                         </div>
-                      </div>
+                      </fieldset>
                       <div className={`${shared.full} ${shared.actionsRow}`}>
-                        <button type="submit" className="btn">
-                          Save
-                        </button>
+                        <SubmitButton>Save</SubmitButton>
                       </div>
                     </form>
 
                     <div>
-                      <span className={shared.sectionLabel}>Ledger — contributions given</span>
+                      <h2 className={shared.sectionLabel}>Ledger — contributions given</h2>
                       {p.given.map((c) => (
                         <div key={c.id} className={shared.listRow}>
                           <span className="sub">{isoDate(c.date)}</span>
@@ -260,23 +262,29 @@ export default async function PeoplePage() {
                           ))}
                         </select>
                         <input name="text" placeholder="What you gave, today" />
-                        <button type="submit" className="btnGhost">
-                          Add
-                        </button>
+                        <SubmitButton className="btnGhost">Add</SubmitButton>
                       </form>
                     </div>
 
                     <div>
-                      <span className={shared.sectionLabel}>Commitments owed</span>
+                      <h2 className={shared.sectionLabel}>Commitments owed</h2>
                       {p.owed.map((c) => {
                         const broken = !c.done && c.due && daysSince(c.due, now) > 0;
                         return (
                           <div key={c.id} className={shared.listRow}>
                             <form action={completeCommitment}>
                               <input type="hidden" name="id" value={c.id} />
-                              <button type="submit" className={shared.tinyBtn} disabled={c.done}>
-                                {c.done ? "✓" : "○"}
-                              </button>
+                              {c.done ? (
+                                <span className={shared.tinyBtn} aria-label={`Completed: ${c.text}`}>
+                                  ✓
+                                </span>
+                              ) : (
+                                <IconSubmit
+                                  className={shared.tinyBtn}
+                                  glyph="○"
+                                  label={`Mark complete: ${c.text}`}
+                                />
+                              )}
                             </form>
                             <span style={c.done ? { textDecoration: "line-through" } : undefined}>
                               {c.text}
@@ -294,39 +302,43 @@ export default async function PeoplePage() {
                         <input type="hidden" name="personId" value={p.id} />
                         <input name="text" placeholder="What you owe them" />
                         <input type="date" name="due" style={{ flex: "0 0 150px" }} />
-                        <button type="submit" className="btnGhost">
-                          Add
-                        </button>
+                        <SubmitButton className="btnGhost">Add</SubmitButton>
                       </form>
                     </div>
 
                     <div>
-                      <span className={shared.sectionLabel}>Potential contributions</span>
+                      <h2 className={shared.sectionLabel}>Potential contributions</h2>
                       {p.potential.map((c) => (
                         <div key={c.id} className={shared.listRow}>
                           <span>{c.text}</span>
                           <form action={deletePotential}>
                             <input type="hidden" name="id" value={c.id} />
-                            <button type="submit" className={shared.dangerBtn}>
+                            <ConfirmButton
+                              className={shared.dangerBtn}
+                              label={`Remove potential contribution: ${c.text}`}
+                              confirmLabel="Remove?"
+                            >
                               ×
-                            </button>
+                            </ConfirmButton>
                           </form>
                         </div>
                       ))}
                       <form action={addPotential} className={shared.addForm}>
                         <input type="hidden" name="personId" value={p.id} />
                         <input name="text" placeholder="Something you could do for them" />
-                        <button type="submit" className="btnGhost">
-                          Add
-                        </button>
+                        <SubmitButton className="btnGhost">Add</SubmitButton>
                       </form>
                     </div>
 
                     <form action={deletePerson}>
                       <input type="hidden" name="id" value={p.id} />
-                      <button type="submit" className={shared.dangerBtn}>
+                      {/* Takes the whole ledger and every commitment with it. */}
+                      <ConfirmButton
+                        className={shared.dangerBtn}
+                        label={`Delete ${p.name}, their ledger and all commitments`}
+                      >
                         Delete person
-                      </button>
+                      </ConfirmButton>
                     </form>
                   </div>
                 </details>
@@ -337,7 +349,7 @@ export default async function PeoplePage() {
       })}
 
       <div className={shared.createCard}>
-        <span className={shared.sectionLabel}>Add a person</span>
+        <h2 className={shared.sectionLabel}>Add a person</h2>
         <form action={createPerson} className={shared.addForm}>
           <input name="name" placeholder="Name" required />
           <select name="ring" defaultValue="WORKING" style={{ flex: "0 0 120px" }}>
@@ -354,9 +366,7 @@ export default async function PeoplePage() {
               </option>
             ))}
           </select>
-          <button type="submit" className="btn">
-            Add
-          </button>
+          <SubmitButton>Add</SubmitButton>
         </form>
       </div>
     </div>

@@ -61,49 +61,49 @@ export async function DepthStep() {
             </summary>
             <div className={shared.formGrid}>
               <div className={shared.full}>
-                <span className="label">Mission — the standing definition</span>
+                <label className="label">Mission — the standing definition
                 <input
                   name={`mission-${r.id}`}
                   defaultValue={r.mission ?? ""}
                   placeholder="The kind of person you're trying to be in this role"
-                />
+                /></label>
               </div>
               <div className={shared.full}>
-                <span className="label">Success criteria — how you&apos;d know it&apos;s healthy</span>
+                <label className="label">Success criteria — how you&apos;d know it&apos;s healthy
                 <textarea
                   name={`success-${r.id}`}
                   rows={2}
                   defaultValue={r.success ?? ""}
                   placeholder="What someone would actually see if this role were going well"
-                />
+                /></label>
               </div>
               <div className={shared.full}>
-                <span className="label">Stewardship — what you&apos;re holding in trust</span>
+                <label className="label">Stewardship — what you&apos;re holding in trust
                 <textarea
                   name={`stewardship-${r.id}`}
                   rows={2}
                   defaultValue={r.stewardship ?? ""}
                   placeholder="Whose wellbeing or what asset depends on you here"
-                />
+                /></label>
               </div>
               <div className={shared.full}>
-                <span className="label">Failure mode — how it goes wrong when it goes wrong</span>
+                <label className="label">Failure mode — how it goes wrong when it goes wrong
                 <textarea
                   name={`failureMode-${r.id}`}
                   rows={2}
                   defaultValue={r.failureMode ?? ""}
                   placeholder="Not the disaster — the ordinary way this quietly slips"
-                />
+                /></label>
               </div>
               <div>
-                <span className="label">Review cadence</span>
+                <label className="label">Review cadence
                 <select name={`reviewCadence-${r.id}`} defaultValue={r.reviewCadence ?? ""}>
                   {CADENCES.map((c) => (
                     <option key={c.value} value={c.value}>
                       {c.label}
                     </option>
                   ))}
-                </select>
+                </select></label>
               </div>
             </div>
           </details>

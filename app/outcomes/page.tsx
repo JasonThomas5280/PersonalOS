@@ -1,3 +1,5 @@
+import { ConfirmButton } from "@/components/ConfirmButton";
+import { IconSubmit, SubmitButton } from "@/components/SubmitButton";
 import {
   addGateItem,
   createOutcome,
@@ -15,11 +17,23 @@ export const dynamic = "force-dynamic";
 
 const PHASES = ["EXPLORING", "BUILDING", "TESTING", "DEPLOYING", "HYPERCARE", "CLOSED"] as const;
 
-export default async function OutcomesPage() {
+/* The real pipeline order. Prisma's `phase: "asc"` was alphabetical, which put
+   CLOSED second — above everything still in flight. */
+const PHASE_ORDER: Record<string, number> = {
+  DEPLOYING: 0,
+  HYPERCARE: 1,
+  TESTING: 2,
+  BUILDING: 3,
+  EXPLORING: 4,
+  CLOSED: 5,
+};
+
+export default async function OutcomesPage({ searchParams }: PageProps<"/outcomes">) {
+  const params = await searchParams;
+  const openId = typeof params.open === "string" ? params.open : undefined;
   const now = todayUTC();
-  const [outcomes, roles, profile] = await Promise.all([
+  const [rows, roles, profile] = await Promise.all([
     prisma.outcome.findMany({
-      orderBy: [{ phase: "asc" }, { createdAt: "asc" }],
       include: {
         primaryRole: true,
         roles: { include: { role: true } },
@@ -30,6 +44,17 @@ export default async function OutcomesPage() {
     prisma.role.findMany({ orderBy: { sortOrder: "asc" } }),
     prisma.profile.findUnique({ where: { id: 1 } }),
   ]);
+
+  // Live work first, in pipeline order; within a phase, soonest target first.
+  const outcomes = [...rows].sort((a, b) => {
+    const pa = PHASE_ORDER[a.phase] ?? 9;
+    const pb = PHASE_ORDER[b.phase] ?? 9;
+    if (pa !== pb) return pa - pb;
+    const ta = a.targetDate ? a.targetDate.getTime() : Infinity;
+    const tb = b.targetDate ? b.targetDate.getTime() : Infinity;
+    if (ta !== tb) return ta - tb;
+    return a.createdAt.getTime() - b.createdAt.getTime();
+  });
 
   const active = outcomes.filter((o) => o.phase !== "CLOSED");
   const committed = active.reduce((s, o) => s + (o.weeklyHours ? Number(o.weeklyHours) : 0), 0);
@@ -53,7 +78,12 @@ export default async function OutcomesPage() {
         const slip =
           o.baselineDate && o.targetDate ? daysBetween(o.baselineDate, o.targetDate) : 0;
         return (
-          <details key={o.id} className={`card ${shared.item}`}>
+          <details
+            key={o.id}
+            id={o.id}
+            className={`card ${shared.item}`}
+            open={o.id === openId}
+          >
             <summary>
               <span className={shared.title}>{o.result}</span>
               <span className={shared.meta}>
@@ -77,29 +107,29 @@ export default async function OutcomesPage() {
               <form action={updateOutcome} className={shared.formGrid}>
                 <input type="hidden" name="id" value={o.id} />
                 <div className={shared.full}>
-                  <span className="label">Result — what specifically finishes</span>
-                  <input name="result" defaultValue={o.result} required />
+                  <label className="label">Result — what specifically finishes
+                  <input name="result" defaultValue={o.result} required /></label>
                 </div>
                 <div className={shared.full}>
-                  <span className="label">Purpose — why it matters emotionally</span>
-                  <textarea name="purpose" defaultValue={o.purpose} rows={2} />
+                  <label className="label">Purpose — why it matters emotionally
+                  <textarea name="purpose" defaultValue={o.purpose} rows={2} /></label>
                 </div>
                 <div className={shared.full}>
-                  <span className="label">Massive action plan — one step per line</span>
-                  <textarea name="actions" defaultValue={o.actions} rows={3} />
+                  <label className="label">Massive action plan — one step per line
+                  <textarea name="actions" defaultValue={o.actions} rows={3} /></label>
                 </div>
                 <div>
-                  <span className="label">Phase</span>
+                  <label className="label">Phase
                   <select name="phase" defaultValue={o.phase}>
                     {PHASES.map((p) => (
                       <option key={p} value={p}>
                         {p.toLowerCase()}
                       </option>
                     ))}
-                  </select>
+                  </select></label>
                 </div>
                 <div>
-                  <span className="label">Primary role</span>
+                  <label className="label">Primary role
                   <select name="primaryRoleId" defaultValue={o.primaryRoleId ?? ""}>
                     <option value="">none</option>
                     {roles.map((r) => (
@@ -107,31 +137,31 @@ export default async function OutcomesPage() {
                         {r.icon} {r.label}
                       </option>
                     ))}
-                  </select>
+                  </select></label>
                 </div>
                 <div>
-                  <span className="label">
+                  <label className="label">
                     Target date{" "}
                     {o.baselineDate && (
                       <span className="sub">(baseline {isoDate(o.baselineDate)} — fixed)</span>
                     )}
-                  </span>
-                  <input type="date" name="targetDate" defaultValue={o.targetDate ? isoDate(o.targetDate) : ""} />
+                    <input type="date" name="targetDate" defaultValue={o.targetDate ? isoDate(o.targetDate) : ""} />
+                  </label>
                 </div>
                 <div>
-                  <span className="label">Actual date</span>
-                  <input type="date" name="actualDate" defaultValue={o.actualDate ? isoDate(o.actualDate) : ""} />
+                  <label className="label">Actual date
+                  <input type="date" name="actualDate" defaultValue={o.actualDate ? isoDate(o.actualDate) : ""} /></label>
                 </div>
                 <div>
-                  <span className="label">Lead time (days)</span>
-                  <input type="number" name="leadTimeDays" defaultValue={o.leadTimeDays ?? ""} />
+                  <label className="label">Lead time (days)
+                  <input type="number" name="leadTimeDays" defaultValue={o.leadTimeDays ?? ""} /></label>
                 </div>
                 <div>
-                  <span className="label">Weekly hours</span>
-                  <input type="number" step="0.5" name="weeklyHours" defaultValue={o.weeklyHours === null ? "" : Number(o.weeklyHours)} />
+                  <label className="label">Weekly hours
+                  <input type="number" step="0.5" name="weeklyHours" defaultValue={o.weeklyHours === null ? "" : Number(o.weeklyHours)} /></label>
                 </div>
-                <div className={shared.full}>
-                  <span className="label">Serves roles (primary always included)</span>
+                <fieldset className={shared.full}>
+                  <legend className="label">Serves roles (primary always included)</legend>
                   <div className={shared.checks}>
                     {roles.map((r) => (
                       <label key={r.id}>
@@ -145,64 +175,69 @@ export default async function OutcomesPage() {
                       </label>
                     ))}
                   </div>
-                </div>
+                </fieldset>
                 <div className={shared.full}>
-                  <span className="label">Success criteria — did it deliver (distinct from the gate)</span>
-                  <textarea name="successCriteria" defaultValue={o.successCriteria} rows={2} />
+                  <label className="label">Success criteria — did it deliver (distinct from the gate)
+                  <textarea name="successCriteria" defaultValue={o.successCriteria} rows={2} /></label>
                 </div>
                 <div>
-                  <span className="label">Kill criteria — when to stop</span>
-                  <textarea name="killCriteria" defaultValue={o.killCriteria} rows={2} />
+                  <label className="label">Kill criteria — when to stop
+                  <textarea name="killCriteria" defaultValue={o.killCriteria} rows={2} /></label>
                 </div>
                 <div>
-                  <span className="label">Hypercare exit criteria</span>
-                  <textarea name="exitCriteria" defaultValue={o.exitCriteria} rows={2} />
+                  <label className="label">Hypercare exit criteria
+                  <textarea name="exitCriteria" defaultValue={o.exitCriteria} rows={2} /></label>
                 </div>
                 <div className={`${shared.full} ${shared.actionsRow}`}>
                   <label className={shared.checks}>
                     <input type="checkbox" name="criticalPath" defaultChecked={o.criticalPath} />
                     <span className="sub">critical path</span>
                   </label>
-                  <button type="submit" className="btn">
-                    Save
-                  </button>
+                  <SubmitButton>Save</SubmitButton>
                 </div>
               </form>
 
               <div>
-                <span className={shared.sectionLabel}>
+                <h2 className={shared.sectionLabel}>
                   Go/no-go gate — checklist before committing
-                </span>
+                </h2>
                 {o.gateItems.map((g) => (
                   <div key={g.id} className={shared.listRow}>
                     <form action={toggleGateItem}>
                       <input type="hidden" name="id" value={g.id} />
-                      <button type="submit" className={shared.tinyBtn}>
-                        {g.met ? "✓" : "○"}
-                      </button>
+                      <IconSubmit
+                        className={shared.tinyBtn}
+                        glyph={g.met ? "✓" : "○"}
+                        label={`${g.met ? "Mark not met" : "Mark met"}: ${g.text}`}
+                      />
                     </form>
                     <span style={g.met ? { textDecoration: "line-through" } : undefined}>
                       {g.text}
                     </span>
                     <form action={deleteGateItem}>
                       <input type="hidden" name="id" value={g.id} />
-                      <button type="submit" className={shared.dangerBtn}>
+                      <ConfirmButton
+                        className={shared.dangerBtn}
+                        label={`Remove gate item: ${g.text}`}
+                        confirmLabel="Remove?"
+                      >
                         ×
-                      </button>
+                      </ConfirmButton>
                     </form>
                   </div>
                 ))}
                 <form action={addGateItem} className={shared.addForm}>
                   <input type="hidden" name="outcomeId" value={o.id} />
                   <input name="text" placeholder="Add a gate item" />
-                  <button type="submit" className="btnGhost">
-                    Add
-                  </button>
+                  <SubmitButton className="btnGhost">Add</SubmitButton>
                 </form>
               </div>
 
-              <div>
-                <span className={shared.sectionLabel}>Depends on</span>
+              {/* With one outcome this rendered a heading, an empty checkbox
+                  area and a live Save button. Nothing to depend on yet. */}
+              {outcomes.length > 1 && (
+              <fieldset>
+                <legend className={shared.sectionLabel}>Depends on</legend>
                 <form action={setDependencies}>
                   <input type="hidden" name="outcomeId" value={o.id} />
                   <div className={shared.checks}>
@@ -221,37 +256,47 @@ export default async function OutcomesPage() {
                       ))}
                   </div>
                   <div className={shared.actionsRow} style={{ marginTop: 8 }}>
-                    <button type="submit" className="btnGhost">
-                      Save dependencies
-                    </button>
+                    <SubmitButton className="btnGhost">Save dependencies</SubmitButton>
                   </div>
                 </form>
-              </div>
+              </fieldset>
+              )}
 
               <form action={deleteOutcome}>
                 <input type="hidden" name="id" value={o.id} />
-                <button type="submit" className={shared.dangerBtn}>
+                <ConfirmButton className={shared.dangerBtn} label={`Delete the outcome ${o.result}`}>
                   Delete outcome
-                </button>
+                </ConfirmButton>
               </form>
             </div>
           </details>
         );
       })}
 
+      {outcomes.length === 0 && (
+        <div className="card" style={{ padding: 18 }}>
+          <p className="sub">
+            No outcomes yet. An outcome is something that <em>finishes</em> — concrete enough that
+            you&apos;d know if it happened. Start with the one you&apos;d be most upset to look back
+            on and find untouched, give it an honest weekly-hours estimate, and the capacity line
+            above starts telling you the truth about what fits.
+          </p>
+        </div>
+      )}
+
       <div className={shared.createCard}>
-        <span className={shared.sectionLabel}>New outcome</span>
+        <h2 className={shared.sectionLabel}>New outcome</h2>
         <form action={createOutcome} className={shared.formGrid}>
           <div className={shared.full}>
-            <span className="label">Result — concrete enough that you would know it happened</span>
-            <input name="result" required />
+            <label className="label">Result — concrete enough that you would know it happened
+            <input name="result" required /></label>
           </div>
           <div className={shared.full}>
-            <span className="label">Purpose</span>
-            <textarea name="purpose" rows={2} />
+            <label className="label">Purpose
+            <textarea name="purpose" rows={2} /></label>
           </div>
           <div>
-            <span className="label">Primary role</span>
+            <label className="label">Primary role
             <select name="primaryRoleId" defaultValue="">
               <option value="">none</option>
               {roles.map((r) => (
@@ -259,24 +304,22 @@ export default async function OutcomesPage() {
                   {r.icon} {r.label}
                 </option>
               ))}
-            </select>
+            </select></label>
           </div>
           <div>
-            <span className="label">Target date (sets the baseline — write once)</span>
-            <input type="date" name="targetDate" />
+            <label className="label">Target date (sets the baseline — write once)
+            <input type="date" name="targetDate" /></label>
           </div>
           <div>
-            <span className="label">Weekly hours</span>
-            <input type="number" step="0.5" name="weeklyHours" />
+            <label className="label">Weekly hours
+            <input type="number" step="0.5" name="weeklyHours" /></label>
           </div>
           <div>
-            <span className="label">Lead time (days)</span>
-            <input type="number" name="leadTimeDays" />
+            <label className="label">Lead time (days)
+            <input type="number" name="leadTimeDays" /></label>
           </div>
           <div className={`${shared.full} ${shared.actionsRow}`}>
-            <button type="submit" className="btn">
-              Create in Exploring
-            </button>
+            <SubmitButton>Create in Exploring</SubmitButton>
           </div>
         </form>
       </div>

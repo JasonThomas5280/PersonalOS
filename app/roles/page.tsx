@@ -1,3 +1,5 @@
+import { ConfirmButton } from "@/components/ConfirmButton";
+import { SubmitButton } from "@/components/SubmitButton";
 import { createRole, deleteRole, markRoleReviewed, updateRole } from "@/app/actions";
 import { daysSince, isoDate, todayUTC } from "@/lib/dates";
 import { prisma } from "@/lib/prisma";
@@ -7,7 +9,8 @@ export const dynamic = "force-dynamic";
 
 const ICONS = ["✝", "♥", "★", "◆", "⚡", "◉", "▲", "❋", "◈", "☗", "⬢", "✦"];
 
-export default async function RolesPage() {
+export default async function RolesPage({ searchParams }: PageProps<"/roles">) {
+  const openId = typeof (await searchParams).open === "string" ? ((await searchParams).open as string) : undefined;
   const now = todayUTC();
   const roles = await prisma.role.findMany({
     orderBy: { sortOrder: "asc" },
@@ -27,9 +30,9 @@ export default async function RolesPage() {
       </div>
 
       {roles.map((r) => (
-        <details key={r.id} className={`card ${shared.item}`}>
+        <details key={r.id} id={r.id} open={r.id === openId} className={`card ${shared.item}`}>
           <summary>
-            <span>{r.icon}</span>
+            <span aria-hidden="true">{r.icon}</span>
             <span className={shared.title}>{r.label}</span>
             <span className={shared.meta}>
               {r.health && <span className={`health-${r.health}`}>● {r.health.toLowerCase()}</span>}
@@ -48,83 +51,90 @@ export default async function RolesPage() {
             <form action={updateRole} className={shared.formGrid}>
               <input type="hidden" name="id" value={r.id} />
               <div>
-                <span className="label">Label</span>
-                <input name="label" defaultValue={r.label} required />
+                <label className="label">Label
+                <input name="label" defaultValue={r.label} required /></label>
               </div>
               <div>
-                <span className="label">Icon</span>
+                <label className="label">Icon
                 <select name="icon" defaultValue={r.icon}>
                   {[...new Set([r.icon, ...ICONS])].map((i) => (
                     <option key={i} value={i}>
                       {i}
                     </option>
                   ))}
-                </select>
+                </select></label>
               </div>
               <div>
-                <span className="label">Health</span>
+                <label className="label">Health
                 <select name="health" defaultValue={r.health ?? ""}>
                   <option value="">not set</option>
                   <option value="GREEN">green</option>
                   <option value="YELLOW">yellow</option>
                   <option value="RED">red</option>
-                </select>
+                </select></label>
               </div>
               <div>
-                <span className="label">Review cadence</span>
+                <label className="label">Review cadence
                 <select name="reviewCadence" defaultValue={r.reviewCadence ?? ""}>
                   <option value="">not set</option>
                   <option value="WEEKLY">weekly</option>
                   <option value="MONTHLY">monthly</option>
                   <option value="QUARTERLY">quarterly</option>
-                </select>
+                </select></label>
               </div>
               <div className={shared.full}>
-                <span className="label">Status note — why this color + recovery plan</span>
-                <textarea name="statusNote" defaultValue={r.statusNote} rows={2} />
+                <label className="label">Status note — why this color + recovery plan
+                <textarea name="statusNote" defaultValue={r.statusNote} rows={2} /></label>
               </div>
               <div className={shared.full}>
-                <span className="label">Mission — standing definition, not a goal</span>
-                <textarea name="mission" defaultValue={r.mission} rows={2} />
+                <label className="label">Mission — standing definition, not a goal
+                <textarea name="mission" defaultValue={r.mission} rows={2} /></label>
               </div>
               <div className={shared.full}>
-                <span className="label">Success criteria — observable, not aspirational</span>
-                <textarea name="success" defaultValue={r.success} rows={2} />
+                <label className="label">Success criteria — observable, not aspirational
+                <textarea name="success" defaultValue={r.success} rows={2} /></label>
               </div>
               <div className={shared.full}>
-                <span className="label">Stewardship — what nobody else picks up</span>
-                <textarea name="stewardship" defaultValue={r.stewardship} rows={2} />
+                <label className="label">Stewardship — what nobody else picks up
+                <textarea name="stewardship" defaultValue={r.stewardship} rows={2} /></label>
               </div>
               <div className={shared.full}>
-                <span className="label">Failure mode</span>
-                <textarea name="failureMode" defaultValue={r.failureMode} rows={2} />
+                <label className="label">Failure mode
+                <textarea name="failureMode" defaultValue={r.failureMode} rows={2} /></label>
               </div>
               <div className={`${shared.full} ${shared.actionsRow}`}>
-                <button type="submit" className="btn">
-                  Save
-                </button>
+                <SubmitButton>Save</SubmitButton>
               </div>
             </form>
             <div className={shared.actionsRow}>
               <form action={markRoleReviewed}>
                 <input type="hidden" name="id" value={r.id} />
-                <button type="submit" className="btnGhost">
-                  Mark reviewed {isoDate(now)}
-                </button>
+                <SubmitButton className="btnGhost">Mark reviewed {isoDate(now)}</SubmitButton>
               </form>
               <form action={deleteRole}>
                 <input type="hidden" name="id" value={r.id} />
-                <button type="submit" className={shared.dangerBtn}>
+                <ConfirmButton className={shared.dangerBtn} label={`Delete the role ${r.label}`}>
                   Delete role (links are nulled, nothing cascades)
-                </button>
+                </ConfirmButton>
               </form>
             </div>
           </div>
         </details>
       ))}
 
+      {roles.length === 0 && (
+        <div className="card" style={{ padding: 18 }}>
+          <p className="sub">
+            No roles yet, so nothing else in the system has anywhere to attach — outcomes, RAID
+            items, people and renewal practices all tag back to one. Four to seven is the working
+            range; past that the health colours stop meaning anything. Add the ones you&apos;re
+            actually carrying, then give each a mission: a standing definition, not a goal.
+          </p>
+        </div>
+      )}
+
       <div className={shared.createCard}>
-        <span className={shared.sectionLabel}>Add a role</span>
+        <h2 className={shared.sectionLabel}>Add a role</h2>
         <form action={createRole} className={shared.addForm}>
           <select name="icon" defaultValue="◈" style={{ flex: "0 0 70px" }}>
             {ICONS.map((i) => (
@@ -134,9 +144,7 @@ export default async function RolesPage() {
             ))}
           </select>
           <input name="label" placeholder="Mentor, Neighbor, Son, Coach…" required />
-          <button type="submit" className="btn">
-            Add
-          </button>
+          <SubmitButton>Add</SubmitButton>
         </form>
       </div>
     </div>

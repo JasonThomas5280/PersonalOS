@@ -49,7 +49,7 @@ export function RaidForm({
 
   return (
     <form action={action} className={shared.createCard}>
-      <span className={shared.sectionLabel}>Add to the log</span>
+      <h2 className={shared.sectionLabel}>Add to the log</h2>
 
       <div className={shared.checks}>
         {TYPES.map((t) => (
@@ -69,14 +69,14 @@ export function RaidForm({
 
       <div className={shared.formGrid}>
         <div className={shared.full}>
-          <span className="label">Description</span>
-          <input name="description" placeholder="One line, in your own words" />
+          <label className="label">Description
+          <input name="description" placeholder="One line, in your own words" /></label>
         </div>
 
         <div className={shared.full}>
-          <span className="label">
+          <label className="label">
             {type === "DECISION" ? "Reasoning — why this call?" : "Impact — what it costs if it lands"}
-          </span>
+          
           <textarea
             name="impact"
             rows={2}
@@ -85,33 +85,33 @@ export function RaidForm({
                 ? "The thinking you'll want back in six months"
                 : "Concretely, what does this cost you?"
             }
-          />
+          /></label>
         </div>
 
         {type === "RISK" && (
           <>
             <div className={shared.full}>
-              <span className="label">Trigger — what would tell you it&apos;s happening?</span>
-              <input name="trigger" placeholder="The early signal, not the disaster" />
+              <label className="label">Trigger — what would tell you it&apos;s happening?
+              <input name="trigger" placeholder="The early signal, not the disaster" /></label>
             </div>
             <div>
-              <span className="label">Severity</span>
+              <label className="label">Severity
               <select name="severity" defaultValue="">
                 {SEVERITIES.map((s) => (
                   <option key={s.value} value={s.value}>
                     {s.label}
                   </option>
                 ))}
-              </select>
+              </select></label>
             </div>
             <div>
-              <span className="label">Probability</span>
+              <label className="label">Probability
               <select name="probability" defaultValue="">
                 <option value="">not set</option>
                 <option value="HIGH">high</option>
                 <option value="MEDIUM">medium</option>
                 <option value="LOW">low</option>
-              </select>
+              </select></label>
             </div>
           </>
         )}
@@ -119,28 +119,28 @@ export function RaidForm({
         {type === "ISSUE" && (
           <>
             <div>
-              <span className="label">Severity</span>
+              <label className="label">Severity
               <select name="severity" defaultValue="">
                 {SEVERITIES.map((s) => (
                   <option key={s.value} value={s.value}>
                     {s.label}
                   </option>
                 ))}
-              </select>
+              </select></label>
             </div>
             <div>
-              <span className="label">Classification</span>
+              <label className="label">Classification
               <select name="classification" defaultValue="">
                 {CLASSIFICATIONS.map((c) => (
                   <option key={c.value} value={c.value}>
                     {c.label}
                   </option>
                 ))}
-              </select>
+              </select></label>
             </div>
             <div className={shared.full}>
-              <span className="label">Escalation path — who do you take this to?</span>
-              <input name="escalation" placeholder="A name, not a department" />
+              <label className="label">Escalation path — who do you take this to?
+              <input name="escalation" placeholder="A name, not a department" /></label>
             </div>
           </>
         )}
@@ -148,37 +148,37 @@ export function RaidForm({
         {type === "DECISION" && (
           <>
             <div className={shared.full}>
-              <span className="label">Rejected alternatives — what you didn&apos;t do, and why</span>
+              <label className="label">Rejected alternatives — what you didn&apos;t do, and why
               <textarea
                 name="alternatives"
                 rows={2}
                 placeholder="This is the part you'll wish you'd written down"
-              />
+              /></label>
             </div>
             <div>
-              <span className="label">Decided by</span>
-              <input name="decidedBy" defaultValue="Me" />
+              <label className="label">Decided by
+              <input name="decidedBy" defaultValue="Me" /></label>
             </div>
             <div>
-              <span className="label">Decided on</span>
-              <input type="date" name="decidedOn" />
+              <label className="label">Decided on
+              <input type="date" name="decidedOn" /></label>
             </div>
           </>
         )}
 
         {type === "ACTION" && (
           <div>
-            <span className="label">Owner</span>
-            <input name="owner" defaultValue="Me" />
+            <label className="label">Owner
+            <input name="owner" defaultValue="Me" /></label>
           </div>
         )}
 
         <div>
-          <span className="label">Due</span>
-          <input type="date" name="due" />
+          <label className="label">Due
+          <input type="date" name="due" /></label>
         </div>
         <div>
-          <span className="label">Role</span>
+          <label className="label">Role
           <select name="roleId" defaultValue="">
             <option value="">none</option>
             {roles.map((r) => (
@@ -186,10 +186,10 @@ export function RaidForm({
                 {r.icon} {r.label}
               </option>
             ))}
-          </select>
+          </select></label>
         </div>
         <div>
-          <span className="label">Outcome</span>
+          <label className="label">Outcome
           <select name="outcomeId" defaultValue="">
             <option value="">none</option>
             {outcomes.map((o) => (
@@ -197,11 +197,11 @@ export function RaidForm({
                 {o.result}
               </option>
             ))}
-          </select>
+          </select></label>
         </div>
         {people.length > 0 && (
           <div>
-            <span className="label">Person</span>
+            <label className="label">Person
             <select name="personId" defaultValue="">
               <option value="">none</option>
               {people.map((p) => (
@@ -209,7 +209,7 @@ export function RaidForm({
                   {p.name}
                 </option>
               ))}
-            </select>
+            </select></label>
           </div>
         )}
       </div>

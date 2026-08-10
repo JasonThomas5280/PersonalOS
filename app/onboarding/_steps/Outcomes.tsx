@@ -1,3 +1,4 @@
+import { SubmitButton } from "@/components/SubmitButton";
 import { prisma } from "@/lib/prisma";
 import { isoDate } from "@/lib/dates";
 import shared from "../../tabs.module.css";
@@ -49,7 +50,7 @@ export async function OutcomesStep() {
     >
       {outcomes.length > 0 && (
         <section className={shared.createCard}>
-          <span className={shared.sectionLabel}>Added so far ({outcomes.length})</span>
+          <h2 className={shared.sectionLabel}>Added so far ({outcomes.length})</h2>
           <div className={styles.added}>
             {outcomes.map((o) => (
               <div key={o.id} className={styles.addedRow}>
@@ -66,9 +67,7 @@ export async function OutcomesStep() {
                 </span>
                 <form action={removeOutcome}>
                   <input type="hidden" name="id" value={o.id} />
-                  <button type="submit" className={shared.tinyBtn}>
-                    remove
-                  </button>
+                  <SubmitButton className={shared.tinyBtn} pendingLabel="…">remove</SubmitButton>
                 </form>
               </div>
             ))}
@@ -88,54 +87,54 @@ export async function OutcomesStep() {
 
       {/* Each add posts on its own so the list above re-renders with it. */}
       <form action={addOutcome} className={shared.createCard}>
-        <span className={shared.sectionLabel}>Add an outcome</span>
+        <h2 className={shared.sectionLabel}>Add an outcome</h2>
         <div className={shared.formGrid}>
           <div className={shared.full}>
-            <span className="label">Result — what specifically gets finished?</span>
-            <input name="result" placeholder="Concrete enough that you'd know if it happened" />
+            <label className="label">Result — what specifically gets finished?
+            <input name="result" placeholder="Concrete enough that you'd know if it happened" /></label>
           </div>
           <div className={shared.full}>
-            <span className="label">
+            <label className="label">
               Purpose — why does it matter to your soul, not your schedule?
-            </span>
+            
             <textarea
               name="purpose"
               rows={2}
               placeholder="This is the fuel. Write the version that makes your chest tighten a little."
-            />
+            /></label>
           </div>
           <div className={shared.full}>
-            <span className="label">Massive action plan — the moves that get it there</span>
-            <textarea name="actions" rows={3} placeholder="One per line is fine." />
+            <label className="label">Massive action plan — the moves that get it there
+            <textarea name="actions" rows={3} placeholder="One per line is fine." /></label>
           </div>
-          <div className={shared.full}>
-            <span className="label">Roles it serves — first pick is primary</span>
+          <fieldset className={shared.full}>
+            <legend className="label">Roles it serves — first pick is primary</legend>
             <div className={shared.checks}>
               {roles.map((r) => (
                 <label key={r.id} className={shared.chip}>
                   <input type="checkbox" name="roleSlugs" value={r.slug} />
-                  {r.icon} {r.label}
+                  <span aria-hidden="true">{r.icon}</span> {r.label}
                 </label>
               ))}
             </div>
-          </div>
+          </fieldset>
           <div>
-            <span className="label">Phase</span>
+            <label className="label">Phase
             <select name="phase" defaultValue="EXPLORING">
               {PHASES.map((p) => (
                 <option key={p} value={p}>
                   {p.toLowerCase()}
                 </option>
               ))}
-            </select>
+            </select></label>
           </div>
           <div>
-            <span className="label">Target date (sets the baseline)</span>
-            <input type="date" name="targetDate" />
+            <label className="label">Target date (sets the baseline)
+            <input type="date" name="targetDate" /></label>
           </div>
           <div>
-            <span className="label">Hours per week — honest guess</span>
-            <input type="number" step="0.5" min="0" name="weeklyHours" />
+            <label className="label">Hours per week — honest guess
+            <input type="number" step="0.5" min="0" name="weeklyHours" /></label>
           </div>
           <div>
             <label className={shared.chip}>
@@ -144,34 +143,32 @@ export async function OutcomesStep() {
             </label>
           </div>
           <div className={shared.full}>
-            <span className="label">Go/no-go gate — one check per line</span>
+            <label className="label">Go/no-go gate — one check per line
             <textarea
               name="gate"
               rows={3}
               placeholder={"What has to be true before you commit\nOne per line"}
-            />
+            /></label>
           </div>
           <div className={shared.full}>
-            <span className="label">Success criteria — did it actually deliver?</span>
+            <label className="label">Success criteria — did it actually deliver?
             <textarea
               name="successCriteria"
               rows={2}
               placeholder="Distinct from the gate: the gate says you may start, this says it worked"
-            />
+            /></label>
           </div>
           <div className={shared.full}>
-            <span className="label">Kill criteria — when do you stop?</span>
+            <label className="label">Kill criteria — when do you stop?
             <textarea
               name="killCriteria"
               rows={2}
               placeholder="Decide now, while you're calm about it"
-            />
+            /></label>
           </div>
         </div>
         <div className={shared.actionsRow}>
-          <button type="submit" className="btnGhost">
-            Add this outcome
-          </button>
+          <SubmitButton className="btnGhost">Add this outcome</SubmitButton>
         </div>
       </form>
 
@@ -180,14 +177,14 @@ export async function OutcomesStep() {
         <input type="hidden" name="step" value="outcomes" />
         {outcomes.length > 1 && (
           <section className={shared.createCard}>
-            <span className={shared.sectionLabel}>What blocks what</span>
+            <h2 className={shared.sectionLabel}>What blocks what</h2>
             <p className="sub">
               Tick the outcomes that have to move first. This is what makes the critical path mean
               something rather than being a label.
             </p>
             {outcomes.map((o) => (
-              <div key={o.id} style={{ marginBottom: 12 }}>
-                <span className="label">{o.result} is blocked by…</span>
+              <fieldset key={o.id} style={{ marginBottom: 12 }}>
+                <legend className="label">{o.result} is blocked by…</legend>
                 <div className={shared.checks}>
                   {outcomes
                     .filter((c) => c.id !== o.id)
@@ -203,7 +200,7 @@ export async function OutcomesStep() {
                       </label>
                     ))}
                 </div>
-              </div>
+              </fieldset>
             ))}
           </section>
         )}
@@ -221,9 +218,7 @@ export async function OutcomesStep() {
         </Later>
 
         <div className={shared.actionsRow}>
-          <button type="submit" className="btn">
-            Next — renewal
-          </button>
+          <SubmitButton>Next — renewal</SubmitButton>
         </div>
       </form>
     </Shell>

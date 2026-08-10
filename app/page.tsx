@@ -34,6 +34,8 @@ export default async function Today() {
   ]);
   const alerts = computeAlerts(snapshot);
   const slots = [0, 1, 2].map((slot) => bigThree.find((b) => b.slot === slot) ?? null);
+  const filled = slots.filter((s) => s?.text).length;
+  const q2Count = slots.filter((s) => s?.text && s.quadrant === "Q2").length;
 
   return (
     <div className={styles.stack}>
@@ -50,17 +52,27 @@ export default async function Today() {
       )}
 
       <section>
-        <span className="label">Alerts — derived, never stored</span>
+        <h2 className="label">Alerts — derived, never stored</h2>
         <AlertsPanel alerts={alerts} />
       </section>
 
       <section>
-        <span className="label">Coach — a readout over everything above</span>
+        <h2 className="label">Coach — a readout over everything above</h2>
         <CoachPanel />
       </section>
 
       <section>
-        <span className="label">Big 3 — three moves that build, not just react</span>
+        {/* Q2 is the whole Covey thesis and was previously only visible by
+            reading three selects, or as prose in the alerts list. */}
+        <h2 className="label">
+          Big 3 — three moves that build, not just react
+          {filled > 0 && (
+            <span className={q2Count === 0 ? "health-RED" : "health-GREEN"}>
+              {" "}
+              · {q2Count} of {filled} in Q2
+            </span>
+          )}
+        </h2>
         <div className={styles.bigThree}>
           {slots.map((item, slot) => (
             <div key={slot} className={`card ${styles.slot}`} data-done={item?.done ?? false}>
@@ -121,7 +133,7 @@ export default async function Today() {
       </section>
 
       <section>
-        <span className="label">Sharpen the Saw — last 28 days</span>
+        <h2 className="label">Sharpen the Saw — last 28 days</h2>
         <div className={styles.sawRow}>
           {sawPractices.map((sp) => {
             const in28 = sp.sessions.filter((x) => {
