@@ -8,6 +8,7 @@
     "start": "next start",
     "lint": "eslint",
     "seed": "tsx seed/seed.ts",
+    "verify": "tsx scripts/verify-db.ts",
     "test": "vitest run"
   },
   "prisma": {

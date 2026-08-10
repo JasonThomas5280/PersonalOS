@@ -51,6 +51,9 @@ function normToken(v: unknown): string | null {
     SUPERCONNECTOR: "SUPER_CONNECTOR",
     PREKICKOFF: "EXPLORING",
     PRE_KICKOFF: "EXPLORING",
+    // CLAUDE.md states risk probability as "high/med/low"; the enum is MEDIUM.
+    // Without this, a real export carrying "med" aborts the entire seed.
+    MED: "MEDIUM",
   };
   return ALIASES[t] ?? t;
 }
@@ -152,9 +155,20 @@ async function main() {
      at the top level; a nested profile object is also accepted. */
   const profile = state.profile ?? { mission: state.mission, capacityBudget: state.capacityBudget };
   if (profile.mission !== undefined || profile.capacityBudget !== undefined) {
+    // The capacity worksheet the budget was derived from. Absent in prototype
+    // exports, so every field stays null rather than defaulting to zero — a
+    // zeroed worksheet would read as "no obligations" instead of "not answered".
+    const w = state.capacityWorksheet ?? {};
     const data = {
       mission: asText(profile.mission),
       capacityBudget: asDecimal(profile.capacityBudget) ?? new Prisma.Decimal(12),
+      sleepHours: asDecimal(w.sleep),
+      workHours: asDecimal(w.work),
+      commuteHours: asDecimal(w.commute),
+      familyHours: asDecimal(w.family),
+      householdHours: asDecimal(w.household),
+      existingHours: asDecimal(w.existing),
+      onboardedAt: state.onboardedAt ? new Date(String(state.onboardedAt)) : null,
     };
     await prisma.profile.upsert({ where: { id: 1 }, create: { id: 1, ...data }, update: data });
   }

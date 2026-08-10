@@ -26,11 +26,27 @@ export async function GET() {
     ]);
 
   const d = (x: Date | null) => (x ? isoDate(x) : null);
+  const num = (x: { toString(): string } | null) => (x === null ? null : Number(x));
 
   const state = {
     exportedAt: isoDate(todayUTC()),
     mission: profile?.mission ?? "",
     capacityBudget: profile ? Number(profile.capacityBudget) : 12,
+    // The 168-hour breakdown the budget was derived from. Omitted entirely when
+    // the worksheet was never filled in, so exports stay the prototype's shape.
+    ...(profile && profile.sleepHours !== null
+      ? {
+          capacityWorksheet: {
+            sleep: Number(profile.sleepHours),
+            work: num(profile.workHours),
+            commute: num(profile.commuteHours),
+            family: num(profile.familyHours),
+            household: num(profile.householdHours),
+            existing: num(profile.existingHours),
+          },
+        }
+      : {}),
+    ...(profile?.onboardedAt ? { onboardedAt: d(profile.onboardedAt) } : {}),
     roles: roles.map((r) => ({ id: r.slug, label: r.label, icon: r.icon })),
     roleDetail: Object.fromEntries(
       roles.map((r) => [
