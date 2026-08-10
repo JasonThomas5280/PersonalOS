@@ -1,0 +1,457 @@
+// Personal Operating System — initial schema
+// Source of truth for the data model. Shapes mirror the artifact prototype's
+// exported JSON (seed/initial-state.json); see CLAUDE.md for domain vocabulary.
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+/* ───────────────────────── ENUMS ───────────────────────── */
+
+enum Phase {
+  EXPLORING
+  BUILDING
+  TESTING
+  DEPLOYING
+  HYPERCARE
+  CLOSED
+}
+
+enum Health {
+  GREEN
+  YELLOW
+  RED
+}
+
+enum RaidType {
+  RISK
+  ACTION
+  ISSUE
+  DECISION
+}
+
+enum RaidStatus {
+  OPEN
+  IN_PROGRESS
+  BLOCKED
+  DEFERRED
+  CLOSED
+}
+
+enum Severity {
+  S1 // blocking
+  S2 // major, no workaround
+  S3 // major, workaround exists
+  S4 // minor
+}
+
+enum Probability {
+  HIGH
+  MEDIUM
+  LOW
+}
+
+enum IssueClassification {
+  STRUCTURAL_GAP
+  EXECUTION_DEFECT
+  CONFIGURATION
+  SKILL_GAP
+  ENVIRONMENT
+  DEPENDS_ON_OTHERS
+}
+
+enum Ring {
+  INNER // 3–5 people, 90d cadence
+  WORKING // 15–20, 56d
+  AMBIENT // 50–150, 240d
+}
+
+enum Stage {
+  SPOT
+  ASSESS
+  DEVELOP
+  MAINTAIN
+}
+
+enum Engine {
+  MONEY
+  IDEOLOGY
+  CONNECTION
+  EGO
+}
+
+enum Confidence {
+  LOW
+  MEDIUM
+  HIGH
+}
+
+enum NodeType {
+  SUPER_CONNECTOR
+  GATEKEEPER
+  HUB
+}
+
+enum ContributionCategory {
+  INFORMATIONAL
+  CONNECTIVE
+  TIME
+  ACKNOWLEDGMENT
+  OPERATIONAL
+  PRESENCE
+}
+
+enum Quadrant {
+  Q1 // crisis: urgent + important
+  Q2 // investment: important, not urgent
+  Q3 // interruption: urgent, not important
+  Q4 // waste
+}
+
+enum SawDimension {
+  PHYSICAL
+  MENTAL
+  SPIRITUAL
+  SOCIAL
+}
+
+enum SawCadence {
+  DAILY
+  FIVE_X_WEEK
+  THREE_X_WEEK
+  WEEKLY
+  BIWEEKLY
+}
+
+enum ReviewCadence {
+  WEEKLY
+  MONTHLY
+  QUARTERLY
+}
+
+/* ───────────────────────── PROFILE ───────────────────────── */
+
+// Singleton (enforce id = 1 in app code)
+model Profile {
+  id             Int     @id @default(1)
+  mission        String  @default("")
+  capacityBudget Decimal @default(12) @db.Decimal(5, 1) // hours/week for outcome work
+  updatedAt      DateTime @updatedAt
+}
+
+/* ───────────────────────── ROLES ───────────────────────── */
+
+model Role {
+  id            String         @id @default(cuid())
+  slug          String         @unique // stable key from the artifact, e.g. "faith"
+  label         String
+  icon          String         @default("◈")
+  sortOrder     Int            @default(0)
+  health        Health?
+  statusNote    String         @default("") // why this color + recovery plan
+  mission       String         @default("") // standing definition, not a goal
+  success       String         @default("") // observable, not aspirational
+  stewardship   String         @default("") // accountable for, nobody else picks up
+  failureMode   String         @default("")
+  reviewCadence ReviewCadence?
+  lastReviewed  DateTime?      @db.Date
+
+  primaryOutcomes Outcome[]      @relation("PrimaryRole")
+  outcomes        OutcomeRole[]
+  bigThreeItems   BigThreeItem[]
+  raidItems       RaidItem[]
+  people          PersonRole[]
+  sawPractices    SawPractice[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+/* ───────────────────────── OUTCOMES ───────────────────────── */
+
+model Outcome {
+  id      String @id @default(cuid())
+  result  String // what specifically finishes
+  purpose String @default("") // why it matters emotionally
+  actions String @default("") // massive action plan, newline-separated
+  phase   Phase  @default(EXPLORING)
+
+  // Primary role (grouping/coverage) + full set via OutcomeRole
+  primaryRoleId String?
+  primaryRole   Role?   @relation("PrimaryRole", fields: [primaryRoleId], references: [id], onDelete: SetNull)
+  roles         OutcomeRole[]
+
+  baselineDate DateTime? @db.Date // first commitment — write once, then immutable via UI
+  targetDate   DateTime? @db.Date
+  actualDate   DateTime? @db.Date
+  leadTimeDays Int?
+  weeklyHours  Decimal?  @db.Decimal(5, 1)
+  criticalPath Boolean   @default(false)
+
+  successCriteria String @default("") // did it deliver (distinct from gate)
+  killCriteria    String @default("") // when to stop
+  exitCriteria    String @default("") // hypercare exit
+
+  gateItems GateItem[]
+
+  // Dependencies: this outcome is blocked by `blockedBy`
+  blockedBy OutcomeDependency[] @relation("Blocked")
+  blocking  OutcomeDependency[] @relation("Blocking")
+
+  bigThreeItems BigThreeItem[]
+  raidItems     RaidItem[]
+  people        PersonOutcome[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model OutcomeRole {
+  outcomeId String
+  roleId    String
+  outcome   Outcome @relation(fields: [outcomeId], references: [id], onDelete: Cascade)
+  role      Role    @relation(fields: [roleId], references: [id], onDelete: Cascade)
+
+  @@id([outcomeId, roleId])
+}
+
+model OutcomeDependency {
+  blockedId  String // the outcome that is waiting
+  blockingId String // the outcome it waits on
+  blocked    Outcome @relation("Blocked", fields: [blockedId], references: [id], onDelete: Cascade)
+  blocking   Outcome @relation("Blocking", fields: [blockingId], references: [id], onDelete: Cascade)
+
+  @@id([blockedId, blockingId])
+}
+
+model GateItem {
+  id        String  @id @default(cuid())
+  outcomeId String
+  outcome   Outcome @relation(fields: [outcomeId], references: [id], onDelete: Cascade)
+  text      String
+  met       Boolean @default(false)
+  sortOrder Int     @default(0)
+}
+
+/* ───────────────────────── RAID ───────────────────────── */
+
+model RaidItem {
+  id          String     @id @default(cuid())
+  type        RaidType
+  description String
+  impact      String     @default("") // reasoning, for decisions
+  status      RaidStatus @default(OPEN)
+  owner       String     @default("Me")
+  due         DateTime?  @db.Date
+
+  // Risk fields
+  trigger     String       @default("")
+  severity    Severity?
+  probability Probability?
+
+  // Issue fields
+  classification IssueClassification?
+  escalation     String               @default("")
+
+  // Decision fields
+  alternatives String    @default("") // what was rejected and why it lost
+  decidedBy    String    @default("")
+  decidedOn    DateTime? @db.Date
+
+  // Close-out
+  resolution String    @default("")
+  closedOn   DateTime? @db.Date
+
+  // Links — nulled, never cascaded, when target is deleted
+  roleId    String?
+  role      Role?    @relation(fields: [roleId], references: [id], onDelete: SetNull)
+  outcomeId String?
+  outcome   Outcome? @relation(fields: [outcomeId], references: [id], onDelete: SetNull)
+  personId  String?
+  person    Person?  @relation(fields: [personId], references: [id], onDelete: SetNull)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([status, type])
+}
+
+/* ───────────────────────── PEOPLE ───────────────────────── */
+
+model Person {
+  id            String    @id @default(cuid())
+  name          String
+  title         String    @default("")
+  employer      String    @default("")
+  familyContext String    @default("")
+  ring          Ring      @default(WORKING)
+  stage         Stage     @default(SPOT)
+  origin        String    @default("") // how you met
+  firstContact  DateTime? @db.Date
+  lastContact   DateTime? @db.Date
+  cadenceDays   Int? // override; null = ring default (90/56/240)
+
+  // Motivation map
+  primaryEngine    Engine?
+  secondaryEngine  Engine?
+  rejectedEngine   Engine?
+  engineConfidence Confidence @default(LOW)
+
+  archetype String    @default("")
+  nodeType  NodeType?
+
+  situation String @default("") // 3–5 live facts, newline-separated
+  material  String @default("") // conversational threads, newline-separated
+
+  roles    PersonRole[]
+  outcomes PersonOutcome[]
+
+  given     Contribution[]
+  owed      Commitment[]
+  potential PotentialContribution[]
+  raidItems RaidItem[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([ring])
+}
+
+model PersonRole {
+  personId String
+  roleId   String
+  person   Person @relation(fields: [personId], references: [id], onDelete: Cascade)
+  role     Role   @relation(fields: [roleId], references: [id], onDelete: Cascade)
+
+  @@id([personId, roleId])
+}
+
+model PersonOutcome {
+  personId  String
+  outcomeId String
+  person    Person  @relation(fields: [personId], references: [id], onDelete: Cascade)
+  outcome   Outcome @relation(fields: [outcomeId], references: [id], onDelete: Cascade)
+
+  @@id([personId, outcomeId])
+}
+
+model Contribution {
+  id       String               @id @default(cuid())
+  personId String
+  person   Person               @relation(fields: [personId], references: [id], onDelete: Cascade)
+  date     DateTime             @db.Date
+  category ContributionCategory
+  text     String
+
+  @@index([personId, date])
+}
+
+model Commitment {
+  id          String    @id @default(cuid())
+  personId    String
+  person      Person    @relation(fields: [personId], references: [id], onDelete: Cascade)
+  text        String
+  due         DateTime? @db.Date
+  done        Boolean   @default(false)
+  completedOn DateTime? @db.Date
+
+  @@index([personId, done])
+}
+
+model PotentialContribution {
+  id       String @id @default(cuid())
+  personId String
+  person   Person @relation(fields: [personId], references: [id], onDelete: Cascade)
+  text     String
+}
+
+/* ───────────────────────── BIG 3 (daily, history kept) ───────────────────────── */
+
+model BigThreeItem {
+  id       String    @id @default(cuid())
+  date     DateTime  @db.Date
+  slot     Int // 0, 1, 2
+  text     String    @default("")
+  done     Boolean   @default(false)
+  quadrant Quadrant?
+
+  roleId    String?
+  role      Role?    @relation(fields: [roleId], references: [id], onDelete: SetNull)
+  outcomeId String?
+  outcome   Outcome? @relation(fields: [outcomeId], references: [id], onDelete: SetNull)
+
+  @@unique([date, slot])
+  @@index([date])
+}
+
+/* ───────────────────────── SHARPEN THE SAW ───────────────────────── */
+
+model SawPractice {
+  id             String       @id @default(cuid())
+  dimension      SawDimension @unique
+  practice       String       @default("")
+  minimumViable  String       @default("") // the bad-week floor
+  cadence        SawCadence?
+  sessionMinutes Int?
+  mvMinutes      Int?
+  depletes       String       @default("") // early-warning triggers
+  health         Health?
+  note           String       @default("")
+
+  roleId String?
+  role   Role?   @relation(fields: [roleId], references: [id], onDelete: SetNull)
+
+  sessions SawSession[]
+}
+
+model SawSession {
+  id         String       @id @default(cuid())
+  practiceId String
+  practice   SawPractice  @relation(fields: [practiceId], references: [id], onDelete: Cascade)
+  date       DateTime     @db.Date
+
+  @@unique([practiceId, date])
+}
+
+/* ───────────────────────── REVIEWS & RETROS ───────────────────────── */
+
+model WeeklyReview {
+  id         String   @id @default(cuid())
+  weekStart  DateTime @unique @db.Date
+  wins       String   @default("")
+  misses     String   @default("") // classify: defect or gap
+  quadrant   String   @default("") // where the week actually went
+  drift      String   @default("") // calendar vs role missions
+  ledger     String   @default("") // owed / not contributing / could do
+  blocked    String   @default("")
+  nextWeek   String   @default("") // big rocks by role
+  gratitude  String   @default("")
+  health     Health?
+  healthNote String   @default("")
+  updatedAt  DateTime @updatedAt
+}
+
+model Retro {
+  id         String          @id @default(cuid())
+  quarter    String // e.g. "Q3 2026"
+  date       DateTime        @db.Date
+  wentWell   String          @default("")
+  didnt      String          @default("")
+  rootCauses String          @default("")
+  changes    ProcessChange[]
+}
+
+model ProcessChange {
+  id      String    @id @default(cuid())
+  retroId String
+  retro   Retro     @relation(fields: [retroId], references: [id], onDelete: Cascade)
+  change  String // a mechanism, not a goal
+  why     String    @default("")
+  target  DateTime? @db.Date
+  done    Boolean   @default(false)
+}
