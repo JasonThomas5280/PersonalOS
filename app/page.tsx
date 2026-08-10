@@ -57,7 +57,7 @@ export default async function Today() {
       </section>
 
       <section>
-        <h2 className="label">Coach — a readout over everything above</h2>
+        <h2 className="label">Coach — ask Claude what this all adds up to</h2>
         <CoachPanel />
       </section>
 

@@ -51,6 +51,12 @@ export function CaptureClient({
   const approved = raid.filter((r) => r.on).length + people.filter((p) => p.on).length;
 
   async function extract() {
+    // Say why nothing happened rather than sitting there greyed out — a
+    // disabled primary button reads as "unavailable", not "waiting for you".
+    if (!text.trim()) {
+      setError("Write the dump first — a couple of sentences is enough.");
+      return;
+    }
     setExtracting(true);
     setError(null);
     setResult(null);
@@ -121,24 +127,23 @@ export function CaptureClient({
       <section className={shared.createCard}>
         <h2 className={shared.sectionLabel}>The dump</h2>
         <p className="sub">
-          Within ten minutes of the conversation, while you still remember what was actually said.
-          Ten minutes later your memory has already started editing.
+          Write it however it comes out. Claude reads it and proposes RAID items and people-ledger
+          updates — you review every one before anything is saved. Within ten minutes of the
+          conversation, while you still remember what was actually said.
         </p>
+        {/* rows=6, not 8: the button was below the fold on a laptop, so the
+            page read as a bare notes field with nothing to do. */}
         <textarea
-          rows={8}
+          rows={6}
           value={text}
           onChange={(e) => setText(e.target.value)}
           placeholder="Who you spoke to, what got decided, what you promised, what worries you now."
         />
         <div className={shared.actionsRow}>
-          <button
-            type="button"
-            onClick={extract}
-            disabled={extracting || !text.trim()}
-            className="btn"
-          >
-            {extracting ? "Reading…" : "Pull out the structure"}
+          <button type="button" onClick={extract} disabled={extracting} className="btn">
+            {extracting ? "Reading…" : "Find the RAID items and people"}
           </button>
+          <span className="sub">Nothing is saved until you approve it.</span>
         </div>
       </section>
 
